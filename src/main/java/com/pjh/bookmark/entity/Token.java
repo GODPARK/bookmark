@@ -31,4 +31,15 @@ public class Token {
         this.token = token;
     }
 
+    public void setTokenExpire(long tokenExpire) {
+        this.tokenExpire = tokenExpire;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public void setTokenTimestamp(Date tokenTimestamp) {
+        this.tokenTimestamp = tokenTimestamp;
+    }
 }

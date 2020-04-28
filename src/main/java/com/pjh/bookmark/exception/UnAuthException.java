@@ -8,4 +8,8 @@ public class UnAuthException extends RuntimeException{
     public UnAuthException(String message) {
         super(message);
     }
+
+    public UnAuthException(){
+        super("Auth Fail");
+    }
 }

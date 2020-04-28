@@ -1,7 +1,7 @@
 package com.pjh.bookmark.dto;
 
 public class AuthRequestDto {
-    private String Account;
+    private String account;
     private String password;
 
     public String getPassword() {
@@ -9,6 +9,6 @@ public class AuthRequestDto {
     }
 
     public String getAccount() {
-        return Account;
+        return account;
     }
 }

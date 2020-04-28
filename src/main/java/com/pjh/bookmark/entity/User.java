@@ -15,7 +15,7 @@ public class User {
     @Column(name="user_account", nullable = false, unique = true, length = 30)
     private String userAccount;
 
-    @Column(name="user_password", nullable = false, length = 40)
+    @Column(name="user_password", nullable = false)
     private String userPassword;
 
     @Column(name="user_name", nullable = false, length = 30)
@@ -48,5 +48,37 @@ public class User {
 
     public long getUserRole() {
         return userRole;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
+    }
+
+    public void setUserAccount(String userAccount) {
+        this.userAccount = userAccount;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public void setUserCreate(Date userCreate) {
+        this.userCreate = userCreate;
+    }
+
+    public void setUserRole(long userRole) {
+        this.userRole = userRole;
+    }
+
+    public Date getUserCreate() {
+        return userCreate;
     }
 }
