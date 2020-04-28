@@ -3,8 +3,10 @@ package com.pjh.bookmark.service;
 import com.pjh.bookmark.component.PasswordEncoding;
 import com.pjh.bookmark.dto.AuthRequestDto;
 import com.pjh.bookmark.dto.AuthResponseDto;
+import com.pjh.bookmark.entity.Token;
 import com.pjh.bookmark.entity.User;
 import com.pjh.bookmark.exception.UnAuthException;
+import com.pjh.bookmark.exception.UnExpectedException;
 import com.pjh.bookmark.repository.TokenRepository;
 import com.pjh.bookmark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Date;
 
 @Service
 public class AuthService {
@@ -26,12 +31,56 @@ public class AuthService {
     @Autowired
     PasswordEncoding passwordEncoding;
 
-    public void accountValidator(String token){
-        System.out.println("valid check");
+    public boolean accountValidator(String token){
+        if(token != null){
+            Token originToken = tokenRepository.findByUserId(this.tokenDecode(token));
+            if(originToken.getToken().equals(token) && originToken.getTokenExpire() == 1){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
     }
 
-    private String tokenMaker(long userId){
-        return "token";
+    private String tokenEncode(long userId) {
+        try{
+            String rawToken = Integer.valueOf((int)(Math.random() * 1000000)) + "/" + Long.valueOf(userId) +"/bookmark";
+            byte[] byteRawToken = rawToken.getBytes("UTF-8");
+            Base64.Encoder encoder= Base64.getEncoder();
+            byte[] encodeToken = encoder.encode(byteRawToken);
+            return new String(encodeToken);
+        }
+        catch (IOException io){
+            throw new UnExpectedException("token encode error");
+        }
+    }
+
+    private int tokenDecode(String token){
+
+        try{
+            Base64.Decoder decoder = Base64.getDecoder();
+            byte[] byteToken = decoder.decode(token);
+            String rawToken = new String(byteToken,"UTF-8");
+
+            String[] decodedToken = rawToken.split("/");
+            if(decodedToken.length <= 1){
+                throw new UnAuthException();
+            }
+
+            int userId = Integer.valueOf(decodedToken[1]);
+            return userId;
+
+        }
+        catch (IOException io){
+            throw new UnExpectedException("token decode error");
+        }
+        catch(IllegalArgumentException iae) {
+            throw new UnAuthException();
+        }
     }
 
     public AuthResponseDto login(AuthRequestDto authRequestDto) throws UnAuthException {
@@ -43,7 +92,21 @@ public class AuthService {
             if(passwordEncoding.matches(authRequestDto.getPassword(),user.getUserPassword())){
                 AuthResponseDto authResponseDto = new AuthResponseDto();
 
-                authResponseDto.setToken(tokenMaker(user.getUserId()));
+                String offeredToken = tokenEncode(user.getUserId());
+
+                authResponseDto.setToken(offeredToken);
+
+                Token token = tokenRepository.findByUserId(user.getUserId());
+
+                if(token == null){
+                    throw new UnAuthException();
+                }
+
+                token.setToken(offeredToken);
+                token.setTokenExpire(1);
+                token.setTokenTimestamp(new Date());
+                tokenRepository.save(token);
+
                 return authResponseDto;
             }
             else{
@@ -54,7 +117,15 @@ public class AuthService {
     }
 
     public ResponseEntity logout(HttpServletRequest httpServletRequest){
-        if(true){
+        if(httpServletRequest.getHeader("auth_token") != null){
+            String token = httpServletRequest.getHeader("auth_token");
+            int userId = this.tokenDecode(token);
+
+            Token logoutToken = tokenRepository.findByUserId(userId);
+            logoutToken.setTokenExpire(0);
+            logoutToken.setToken("");
+            tokenRepository.save(logoutToken);
+
             return new ResponseEntity(HttpStatus.ACCEPTED);
         }
         else{

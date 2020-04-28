@@ -27,6 +27,10 @@ public class Token {
         return userId;
     }
 
+    public long getTokenExpire() {
+        return tokenExpire;
+    }
+
     public void setToken(String token) {
         this.token = token;
     }

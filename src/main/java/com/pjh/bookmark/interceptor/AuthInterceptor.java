@@ -1,5 +1,6 @@
 package com.pjh.bookmark.interceptor;
 
+import com.pjh.bookmark.exception.UnAuthException;
 import com.pjh.bookmark.service.AuthService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -18,7 +19,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object handler){
-        this.authService.accountValidator("hello world");
-        return true;
+
+        if(this.authService.accountValidator(httpServletRequest.getHeader("auth_token"))){
+            return true;
+        }
+        else{
+            throw new UnAuthException();
+        }
     }
 }
