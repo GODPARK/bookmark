@@ -26,7 +26,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/image/**",
                 "/font/**",
                 "/META-INF/resources/**",
-                "/swagger-ui.html"
+                "/swagger-ui.html",
+                "/webfront/**"
         );
     }
 
@@ -36,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/").permitAll()
                 .anyRequest().authenticated();
     }
 }

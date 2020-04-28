@@ -27,6 +27,8 @@ out/
 /dist/
 /nbdist/
 /.nb-gradle/
+/webfront/
+/static/
 
 ### VS Code ###
 .vscode/
