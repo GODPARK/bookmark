@@ -10,6 +10,7 @@ import com.pjh.bookmark.exception.UnExpectedException;
 import com.pjh.bookmark.repository.TokenRepository;
 import com.pjh.bookmark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ import java.util.Date;
 
 @Service
 public class AuthService {
+
+    @Value("${auth.expire.hour.limit}")
+    private long expireHourLimit;
 
     @Autowired
     UserRepository userRepository;
@@ -35,6 +39,15 @@ public class AuthService {
         if(token != null){
             Token originToken = tokenRepository.findByUserId(this.tokenDecode(token));
             if(originToken.getToken().equals(token) && originToken.getTokenExpire() == 1){
+                Date now = new Date();
+                long diff = (now.getTime() - originToken.getTokenTimestamp().getTime()) / (1000*60*60);
+
+                if(diff > this.expireHourLimit){
+                    originToken.setTokenExpire(0);
+                    originToken.setToken("");
+                    tokenRepository.save(originToken);
+                    return false;
+                }
                 return true;
             }
             else{

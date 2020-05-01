@@ -31,6 +31,10 @@ public class Token {
         return tokenExpire;
     }
 
+    public Date getTokenTimestamp() {
+        return tokenTimestamp;
+    }
+
     public void setToken(String token) {
         this.token = token;
     }
