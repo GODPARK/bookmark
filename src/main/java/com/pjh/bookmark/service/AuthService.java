@@ -108,6 +108,7 @@ public class AuthService {
                 String offeredToken = tokenEncode(user.getUserId());
 
                 authResponseDto.setToken(offeredToken);
+                authResponseDto.setUserId(user.getUserId());
 
                 Token token = tokenRepository.findByUserId(user.getUserId());
 
