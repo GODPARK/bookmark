@@ -14,4 +14,9 @@ public class BookmarkRequestDto {
     public void setBookmark(Bookmark bookmark) {
         this.bookmark = bookmark;
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }
