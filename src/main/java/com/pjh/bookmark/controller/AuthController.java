@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
 
     @Autowired
     private AuthService authService;
