@@ -13,7 +13,7 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-    @GetMapping(path="", consumes = "application/json", produces = "application/json")
+    @GetMapping(path="", produces = "application/json")
     public TagResponseDto getAllTagByUser(@RequestParam("userId") long userId){
         return tagService.selectAll(userId);
     }
