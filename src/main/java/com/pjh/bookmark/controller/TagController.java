@@ -6,7 +6,6 @@ import com.pjh.bookmark.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/api/tag")
 public class TagController {
@@ -24,7 +23,7 @@ public class TagController {
         return tagService.insertNew(tagRequestDto);
     }
 
-    @PutMapping(path="", consumes = "application/json", produces = "application/json")
+    @PatchMapping(path="", consumes = "application/json", produces = "application/json")
     public TagResponseDto updateTagByUser(@RequestBody TagRequestDto tagRequestDto){
         return tagService.update(tagRequestDto);
     }

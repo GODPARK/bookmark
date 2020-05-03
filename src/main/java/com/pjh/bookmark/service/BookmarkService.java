@@ -23,9 +23,9 @@ public class BookmarkService {
     @Autowired
     private TagRepository tagRepository;
 
-    public BookmarkResponseDto selectAll(BookmarkRequestDto bookmarkRequestDto){
+    public BookmarkResponseDto selectAll(long userId){
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
-        bookmarkResponseDto.setBookmarkList(bookmarkRepository.findByUserIdAndState(bookmarkRequestDto.bookmark.getUserId(), NORMAL_STATIC));
+        bookmarkResponseDto.setBookmarkList(bookmarkRepository.findByUserIdAndState(userId, NORMAL_STATIC));
         return bookmarkResponseDto;
     }
 
