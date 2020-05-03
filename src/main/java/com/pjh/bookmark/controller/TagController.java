@@ -14,8 +14,8 @@ public class TagController {
     private TagService tagService;
 
     @GetMapping(path="", consumes = "application/json", produces = "application/json")
-    public TagResponseDto getAllTagByUser(@RequestBody TagRequestDto tagRequestDto){
-        return tagService.selectAll(tagRequestDto);
+    public TagResponseDto getAllTagByUser(@RequestParam("userId") long userId){
+        return tagService.selectAll(userId);
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")

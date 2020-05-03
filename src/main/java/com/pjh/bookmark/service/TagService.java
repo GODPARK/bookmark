@@ -18,9 +18,9 @@ public class TagService {
     @Autowired
     private TagRepository tagRepository;
 
-    public TagResponseDto selectAll(TagRequestDto tagRequestDto){
+    public TagResponseDto selectAll(long userId){
         TagResponseDto tagResponseDto = new TagResponseDto();
-        tagResponseDto.setTagList(tagRepository.findByUserIdAndState(tagRequestDto.tag.getUserId(),NORMAL_STATIC));
+        tagResponseDto.setTagList(tagRepository.findByUserIdAndState(userId,NORMAL_STATIC));
         return tagResponseDto;
     }
 
