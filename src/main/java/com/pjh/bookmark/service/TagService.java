@@ -27,8 +27,12 @@ public class TagService {
     public TagResponseDto insertNew(TagRequestDto tagRequestDto){
         TagResponseDto tagResponseDto = new TagResponseDto();
         List<Tag> tags = new ArrayList<>();
-        tagRequestDto.tag.setState(1);
-        tags.add(tagRepository.save(tagRequestDto.tag));
+
+        for ( Tag indiTag : tagRequestDto.getTag()) {
+            indiTag.setState(1);
+            tags.add(indiTag);
+        }
+        tagRepository.saveAll(tags);
         tagResponseDto.setTagList(tags);
         return tagResponseDto;
     }
@@ -36,7 +40,11 @@ public class TagService {
     public TagResponseDto update(TagRequestDto tagRequestDto){
         TagResponseDto tagResponseDto = new TagResponseDto();
         List<Tag> tags = new ArrayList<>();
-        tags.add(tagRepository.save(tagRequestDto.tag));
+        for ( Tag indiTag : tagRequestDto.getTag()) {
+            indiTag.setState(1);
+            tags.add(indiTag);
+        }
+        tagRepository.saveAll(tags);
         tagResponseDto.setTagList(tags);
         return tagResponseDto;
     }
@@ -45,9 +53,12 @@ public class TagService {
         TagResponseDto tagResponseDto = new TagResponseDto();
         List<Tag> tags = new ArrayList<>();
 
-        Tag tag = tagRepository.findByTagId(tagRequestDto.tag.getTagId());
-        tag.setState(0);
-        tags.add(tagRepository.save(tag));
+        for ( Tag indiTag : tagRequestDto.getTag() ) {
+            Tag tag = tagRepository.findByTagId(indiTag.getTagId());
+            tag.setState(0);
+            tags.add(tag);
+        }
+        tagRepository.saveAll(tags);
         tagResponseDto.setTagList(tags);
         return tagResponseDto;
     }

@@ -9,6 +9,7 @@ import com.pjh.bookmark.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,40 +32,49 @@ public class BookmarkService {
 
     public BookmarkResponseDto insertNew(BookmarkRequestDto bookmarkRequestDto){
 
-        if(tagRepository.findByTagId(bookmarkRequestDto.bookmark.getTagId()) != null){
-            BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
-            List<Bookmark> bookmarks = new ArrayList<>();
-            bookmarks.add(bookmarkRepository.save(bookmarkRequestDto.bookmark));
-            bookmarkResponseDto.setBookmarkList(bookmarks);
-            return bookmarkResponseDto;
+        List<Bookmark> bookmarks = new ArrayList<>();
+        BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
+        for (Bookmark indiBookmark : bookmarkRequestDto.getBookmark()){
+            if(tagRepository.findByTagId(indiBookmark.getTagId()) != null) {
+                bookmarks.add(indiBookmark);
+            }
+            else {
+                throw new NotHaveTagException(String.valueOf(indiBookmark.getTagId()));
+            }
         }
-        else {
-            throw new NotHaveTagException(String.valueOf(bookmarkRequestDto.bookmark.getTagId()));
-        }
-
+        bookmarkRepository.saveAll(bookmarks);
+        bookmarkResponseDto.setBookmarkList(bookmarks);
+        return bookmarkResponseDto;
     }
 
     public BookmarkResponseDto update(BookmarkRequestDto bookmarkRequestDto){
-        if(tagRepository.findByTagId(bookmarkRequestDto.bookmark.getTagId()) != null){
-            BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
-            List<Bookmark> bookmarks = new ArrayList<>();
-            bookmarkRequestDto.bookmark.setState(1);
-            bookmarks.add(bookmarkRepository.save(bookmarkRequestDto.bookmark));
-            bookmarkResponseDto.setBookmarkList(bookmarks);
-            return bookmarkResponseDto;
+
+        BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
+        List<Bookmark> bookmarks = new ArrayList<>();
+        for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmark()){
+            if(tagRepository.findByTagId(indiBookmark.getTagId()) != null){
+                indiBookmark.setState(1);
+                bookmarks.add(indiBookmark);
+            }
+            else{
+                throw new NotHaveTagException(String.valueOf(indiBookmark.getTagId()));
+            }
         }
-        else{
-            throw new NotHaveTagException(String.valueOf(bookmarkRequestDto.bookmark.getTagId()));
-        }
+        bookmarkRepository.saveAll(bookmarks);
+        bookmarkResponseDto.setBookmarkList(bookmarks);
+        return bookmarkResponseDto;
     }
 
     public BookmarkResponseDto delete(BookmarkRequestDto bookmarkRequestDto){
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         List<Bookmark> bookmarks = new ArrayList<>();
-        Bookmark bookmark = bookmarkRepository.findByBookmarkId(bookmarkRequestDto.getBookmark().getBookmarkId());
-        bookmark.setState(0);
-        bookmark.setTagId(-1);
-        bookmarks.add(bookmarkRepository.save(bookmark));
+        for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmark()){
+            Bookmark bookmark = bookmarkRepository.findByBookmarkId(indiBookmark.getBookmarkId());
+            bookmark.setState(0);
+            bookmark.setTagId(-1);
+            bookmarks.add(bookmark);
+        }
+        bookmarkRepository.saveAll(bookmarks);
         bookmarkResponseDto.setBookmarkList(bookmarks);
         return bookmarkResponseDto;
     }

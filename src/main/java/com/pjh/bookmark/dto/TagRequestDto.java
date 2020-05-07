@@ -5,13 +5,13 @@ import com.pjh.bookmark.entity.Tag;
 import java.util.List;
 
 public class TagRequestDto {
-    public Tag tag;
+    public List<Tag> tag;
 
-    public Tag getTag() {
+    public List<Tag> getTag() {
         return tag;
     }
 
-    public void setTag(Tag tag) {
+    public void setTag(List<Tag> tag) {
         this.tag = tag;
     }
 }
