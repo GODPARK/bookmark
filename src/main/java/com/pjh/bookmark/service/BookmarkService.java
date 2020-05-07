@@ -34,7 +34,7 @@ public class BookmarkService {
 
         List<Bookmark> bookmarks = new ArrayList<>();
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
-        for (Bookmark indiBookmark : bookmarkRequestDto.getBookmark()){
+        for (Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
             if(tagRepository.findByTagId(indiBookmark.getTagId()) != null) {
                 bookmarks.add(indiBookmark);
             }
@@ -48,10 +48,10 @@ public class BookmarkService {
     }
 
     public BookmarkResponseDto update(BookmarkRequestDto bookmarkRequestDto){
-
+        //TODO: 하나만 업데이트 할 수 있도록 수정 필요
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         List<Bookmark> bookmarks = new ArrayList<>();
-        for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmark()){
+        for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
             if(tagRepository.findByTagId(indiBookmark.getTagId()) != null){
                 indiBookmark.setState(1);
                 bookmarks.add(indiBookmark);
@@ -68,7 +68,7 @@ public class BookmarkService {
     public BookmarkResponseDto delete(BookmarkRequestDto bookmarkRequestDto){
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         List<Bookmark> bookmarks = new ArrayList<>();
-        for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmark()){
+        for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
             Bookmark bookmark = bookmarkRepository.findByBookmarkId(indiBookmark.getBookmarkId());
             bookmark.setState(0);
             bookmark.setTagId(-1);

@@ -28,7 +28,7 @@ public class TagService {
         TagResponseDto tagResponseDto = new TagResponseDto();
         List<Tag> tags = new ArrayList<>();
 
-        for ( Tag indiTag : tagRequestDto.getTag()) {
+        for ( Tag indiTag : tagRequestDto.getTagList()) {
             indiTag.setState(1);
             tags.add(indiTag);
         }
@@ -38,9 +38,10 @@ public class TagService {
     }
 
     public TagResponseDto update(TagRequestDto tagRequestDto){
+        //TODO: 하나만 업데이트 할 수 있도록 수정 필요
         TagResponseDto tagResponseDto = new TagResponseDto();
         List<Tag> tags = new ArrayList<>();
-        for ( Tag indiTag : tagRequestDto.getTag()) {
+        for ( Tag indiTag : tagRequestDto.getTagList()) {
             indiTag.setState(1);
             tags.add(indiTag);
         }
@@ -53,7 +54,7 @@ public class TagService {
         TagResponseDto tagResponseDto = new TagResponseDto();
         List<Tag> tags = new ArrayList<>();
 
-        for ( Tag indiTag : tagRequestDto.getTag() ) {
+        for ( Tag indiTag : tagRequestDto.getTagList() ) {
             Tag tag = tagRepository.findByTagId(indiTag.getTagId());
             tag.setState(0);
             tags.add(tag);
