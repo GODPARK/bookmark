@@ -45,4 +45,12 @@ public class Tag {
     public void setState(int state) {
         this.state = state;
     }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
 }

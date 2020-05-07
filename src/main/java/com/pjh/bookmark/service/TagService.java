@@ -27,6 +27,7 @@ public class TagService {
     public TagResponseDto insertNew(TagRequestDto tagRequestDto){
         TagResponseDto tagResponseDto = new TagResponseDto();
         List<Tag> tags = new ArrayList<>();
+        tagRequestDto.tag.setState(1);
         tags.add(tagRepository.save(tagRequestDto.tag));
         tagResponseDto.setTagList(tags);
         return tagResponseDto;
