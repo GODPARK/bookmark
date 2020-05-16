@@ -33,9 +33,13 @@ public class Bookmark {
     @Column(name="bm_state")
     private int state;
 
+    @Column(name="bm_freq")
+    private long frequency;
+
     public Bookmark(){
         this.tagId = 0;
         this.state = 1;
+        this.frequency = 0;
     }
 
     public long getUserId() {
