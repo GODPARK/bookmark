@@ -18,12 +18,12 @@ public class HashController {
         return hashService.selectAll(bookmarkId);
     }
 
-    @PostMapping(path="/save", consumes = "application/json", produces = "application/json")
+    @PostMapping(path="", consumes = "application/json", produces = "application/json")
     public HashResponseDto saveHash(@RequestBody HashRequestDto hashRequestDto){
         return hashService.saveMappingHashAndBookmark(hashRequestDto);
     }
 
-    @DeleteMapping(path="/delete", consumes = "application/json", produces = "application/json")
+    @DeleteMapping(path="", consumes = "application/json", produces = "application/json")
     public HashResponseDto deleteHash(@RequestBody HashRequestDto hashRequestDto){
         return hashService.deleteMappingHash(hashRequestDto);
     }
