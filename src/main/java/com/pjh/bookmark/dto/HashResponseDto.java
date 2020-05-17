@@ -14,8 +14,4 @@ public class HashResponseDto {
     public void setHashKeyList(List<HashKey> hashKeyList) {
         this.hashKeyList = hashKeyList;
     }
-
-    public void addHashKey(HashKey hashKey){
-        this.hashKeyList.add(hashKey);
-    }
 }

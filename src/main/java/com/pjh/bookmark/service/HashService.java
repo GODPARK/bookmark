@@ -29,11 +29,12 @@ public class HashService {
     public HashResponseDto selectAll(long bookmarkId){
         HashResponseDto hashResponseDto = new HashResponseDto();
         List<HashMap> hashMapList = hashMapRepository.findByBookmarkId(bookmarkId);
-
+        List<HashKey> hashKeyList = new ArrayList<>();
         for( HashMap hashMap : hashMapList ) {
             HashKey hashKey = hashKeyRepository.findByHashIdAndState(hashMap.getHashId(),1);
-            hashResponseDto.addHashKey(hashKey);
+            hashKeyList.add(hashKey);
         }
+        hashResponseDto.setHashKeyList(hashKeyList);
         return hashResponseDto;
     }
 

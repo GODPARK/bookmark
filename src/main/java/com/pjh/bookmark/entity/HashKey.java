@@ -19,6 +19,10 @@ public class HashKey {
     @Column(name="user_id", nullable = false)
     private long userId;
 
+    public HashKey(){
+        this.state = 1;
+    }
+
     public void setUserId(long userId) {
         this.userId = userId;
     }
