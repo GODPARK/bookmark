@@ -24,9 +24,6 @@ public class Bookmark {
     @Column(name="bm_info")
     private String bookmarkInfo;
 
-    @Column(name="tag_id")
-    private long tagId;
-
     @Column(name="ur_id")
     private long userId;
 
@@ -37,17 +34,12 @@ public class Bookmark {
     private long frequency;
 
     public Bookmark(){
-        this.tagId = 0;
         this.state = 1;
         this.frequency = 0;
     }
 
     public long getUserId() {
         return userId;
-    }
-
-    public long getTagId() {
-        return tagId;
     }
 
     public int getState() {
@@ -78,7 +70,4 @@ public class Bookmark {
         this.state = state;
     }
 
-    public void setTagId(long tagId) {
-        this.tagId = tagId;
-    }
 }

@@ -16,4 +16,28 @@ public class HashMap {
 
     @Column(name="bm_id", nullable = false)
     private long bookmarkId;
+
+    public void setHashId(long hashId) {
+        this.hashId = hashId;
+    }
+
+    public void setBookmarkId(long bookmarkId) {
+        this.bookmarkId = bookmarkId;
+    }
+
+    public void setSeq(long seq) {
+        this.seq = seq;
+    }
+
+    public long getHashId() {
+        return hashId;
+    }
+
+    public long getBookmarkId() {
+        return bookmarkId;
+    }
+
+    public long getSeq() {
+        return seq;
+    }
 }

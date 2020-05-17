@@ -3,13 +3,10 @@ package com.pjh.bookmark.service;
 import com.pjh.bookmark.dto.BookmarkRequestDto;
 import com.pjh.bookmark.dto.BookmarkResponseDto;
 import com.pjh.bookmark.entity.Bookmark;
-import com.pjh.bookmark.exception.NotHaveTagException;
 import com.pjh.bookmark.repository.BookmarkRepository;
-import com.pjh.bookmark.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class BookmarkService {
     private BookmarkRepository bookmarkRepository;
 
     @Autowired
-    private TagRepository tagRepository;
+    private HashService hashService;
 
     public BookmarkResponseDto selectAll(long userId){
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
@@ -35,12 +32,7 @@ public class BookmarkService {
         List<Bookmark> bookmarks = new ArrayList<>();
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         for (Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
-            if(tagRepository.findByTagId(indiBookmark.getTagId()) != null) {
-                bookmarks.add(indiBookmark);
-            }
-            else {
-                throw new NotHaveTagException(String.valueOf(indiBookmark.getTagId()));
-            }
+            bookmarks.add(indiBookmark);
         }
         bookmarkRepository.saveAll(bookmarks);
         bookmarkResponseDto.setBookmarkList(bookmarks);
@@ -52,13 +44,8 @@ public class BookmarkService {
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         List<Bookmark> bookmarks = new ArrayList<>();
         for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
-            if(tagRepository.findByTagId(indiBookmark.getTagId()) != null){
-                indiBookmark.setState(1);
-                bookmarks.add(indiBookmark);
-            }
-            else{
-                throw new NotHaveTagException(String.valueOf(indiBookmark.getTagId()));
-            }
+            indiBookmark.setState(1);
+            bookmarks.add(indiBookmark);
         }
         bookmarkRepository.saveAll(bookmarks);
         bookmarkResponseDto.setBookmarkList(bookmarks);
@@ -70,8 +57,8 @@ public class BookmarkService {
         List<Bookmark> bookmarks = new ArrayList<>();
         for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
             Bookmark bookmark = bookmarkRepository.findByBookmarkId(indiBookmark.getBookmarkId());
+            hashService.deleteMappingHashAndBookamrkByBookmarkDeleted(bookmark.getBookmarkId());
             bookmark.setState(0);
-            bookmark.setTagId(-1);
             bookmarks.add(bookmark);
         }
         bookmarkRepository.saveAll(bookmarks);

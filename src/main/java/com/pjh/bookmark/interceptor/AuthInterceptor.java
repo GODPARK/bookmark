@@ -20,6 +20,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object handler){
 
+        System.out.println(httpServletRequest.getCookies());
         if(this.authService.accountValidator(httpServletRequest.getHeader("auth_token"))){
             return true;
         }

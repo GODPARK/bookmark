@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HashKeyRepository extends JpaRepository<HashKey, Long> {
+    HashKey findByHashNameAndUserIdAndState(String hashName, long userId, int state);
+    HashKey findByHashIdAndState(long hashId, int state);
 }
