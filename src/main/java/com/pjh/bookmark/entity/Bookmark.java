@@ -30,6 +30,9 @@ public class Bookmark {
     @Column(name="bm_state")
     private int state;
 
+    @Column(name="bm_main")
+    private int isMain;
+
     @Column(name="bm_freq")
     private long frequency;
 
@@ -62,6 +65,10 @@ public class Bookmark {
         return bookmarkName;
     }
 
+    public int getIsMain() {
+        return isMain;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -70,4 +77,7 @@ public class Bookmark {
         this.state = state;
     }
 
+    public void setIsMain(int isMain) {
+        this.isMain = isMain;
+    }
 }

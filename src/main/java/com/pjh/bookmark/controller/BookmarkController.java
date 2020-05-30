@@ -22,6 +22,11 @@ public class BookmarkController {
         return bookmarkService.selectAll(userId);
     }
 
+    @GetMapping(path="/main", consumes = "*/*", produces = "application/json")
+    public BookmarkResponseDto getMainBookmarkByUser(@PathParam(value="userId") long userId){
+        return bookmarkService.selectMain(userId);
+    }
+
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
     public BookmarkResponseDto saveNewBookmarkByUser(@RequestBody BookmarkRequestDto bookmarkRequestDto){
         return bookmarkService.insertNew(bookmarkRequestDto);

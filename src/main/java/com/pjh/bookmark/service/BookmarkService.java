@@ -31,6 +31,12 @@ public class BookmarkService {
         return bookmarkResponseDto;
     }
 
+    public BookmarkResponseDto selectMain(long userId){
+        BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
+        bookmarkResponseDto.setBookmarkList(bookmarkRepository.findByUserIdAndIsMainAndState(userId,1,1));
+        return bookmarkResponseDto;
+    }
+
     public BookmarkResponseDto insertNew(BookmarkRequestDto bookmarkRequestDto){
 
         List<Bookmark> bookmarks = new ArrayList<>();
