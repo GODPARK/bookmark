@@ -1,8 +1,8 @@
 package com.pjh.bookmark.entity;
 
 import org.hibernate.annotations.ColumnDefault;
-
 import javax.persistence.*;
+
 
 @Entity
 @Table(name="bookmark")

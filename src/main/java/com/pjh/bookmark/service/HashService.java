@@ -26,7 +26,14 @@ public class HashService {
     @Autowired
     private BookmarkRepository bookmarkRepository;
 
-    public HashResponseDto selectAll(long bookmarkId){
+    public HashResponseDto selectByUser(long userId){
+        HashResponseDto hashResponseDto = new HashResponseDto();
+        List<HashKey> hashKeyList = hashKeyRepository.findByUserIdAndState(userId,1);
+        hashResponseDto.setHashKeyList(hashKeyList);
+        return hashResponseDto;
+    }
+
+    public HashResponseDto selectByBookmark(long bookmarkId){
         HashResponseDto hashResponseDto = new HashResponseDto();
         List<HashMap> hashMapList = hashMapRepository.findByBookmarkId(bookmarkId);
         List<HashKey> hashKeyList = new ArrayList<>();
@@ -62,7 +69,7 @@ public class HashService {
                 hashMapRepository.save(hashMap);
             }
         }
-        return this.selectAll(hashRequestDto.getBookmarkId());
+        return this.selectByBookmark(hashRequestDto.getBookmarkId());
     }
 
     public HashResponseDto deleteMappingHash(HashRequestDto hashRequestDto) {
@@ -77,7 +84,7 @@ public class HashService {
             }
         }
         hashMapRepository.deleteAll(hashMapList);
-        return this.selectAll(hashRequestDto.getBookmarkId());
+        return this.selectByBookmark(hashRequestDto.getBookmarkId());
     }
 
     public void deleteMappingHashAndBookamrkByBookmarkDeleted(long bookmarkId){

@@ -13,9 +13,14 @@ public class HashController {
     @Autowired
     private HashService hashService;
 
-    @GetMapping(path="", produces = "application/json")
+    @GetMapping(path="/bookmark", produces = "application/json")
     public HashResponseDto getAllHashByBookmark(@RequestParam("bookmarkId") long bookmarkId){
-        return hashService.selectAll(bookmarkId);
+        return hashService.selectByBookmark(bookmarkId);
+    }
+
+    @GetMapping(path="/user", produces = "application/json")
+    public HashResponseDto getAllHashByUser(@RequestParam("userId") long userId){
+        return hashService.selectByUser(userId);
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
