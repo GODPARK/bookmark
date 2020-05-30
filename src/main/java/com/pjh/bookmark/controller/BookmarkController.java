@@ -3,6 +3,7 @@ package com.pjh.bookmark.controller;
 import com.pjh.bookmark.dto.BookmarkRequestDto;
 import com.pjh.bookmark.dto.BookmarkResponseDto;
 import com.pjh.bookmark.service.BookmarkService;
+import com.pjh.bookmark.service.HashService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class BookmarkController {
     @Autowired
     private BookmarkService bookmarkService;
 
+    @Autowired
+    private HashService hashService;
+
     @GetMapping(path="", consumes = "*/*", produces = "application/json")
     public BookmarkResponseDto getAllBookmarkByUser(@PathParam(value="userId") long userId){
         return bookmarkService.selectAll(userId);
@@ -25,6 +29,11 @@ public class BookmarkController {
     @GetMapping(path="/main", consumes = "*/*", produces = "application/json")
     public BookmarkResponseDto getMainBookmarkByUser(@PathParam(value="userId") long userId){
         return bookmarkService.selectMain(userId);
+    }
+
+    @GetMapping(path="/hash", consumes = "*/*", produces = "application/json")
+    public BookmarkResponseDto getBookmarkByHash(@PathParam(value="hashId") long hashId){
+        return hashService.selectByHashId(hashId);
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")

@@ -1,7 +1,10 @@
 package com.pjh.bookmark.service;
 
+import com.pjh.bookmark.dto.BookmarkRequestDto;
+import com.pjh.bookmark.dto.BookmarkResponseDto;
 import com.pjh.bookmark.dto.HashRequestDto;
 import com.pjh.bookmark.dto.HashResponseDto;
+import com.pjh.bookmark.entity.Bookmark;
 import com.pjh.bookmark.entity.HashKey;
 import com.pjh.bookmark.entity.HashMap;
 import com.pjh.bookmark.exception.HashException;
@@ -43,6 +46,18 @@ public class HashService {
         }
         hashResponseDto.setHashKeyList(hashKeyList);
         return hashResponseDto;
+    }
+
+    public BookmarkResponseDto selectByHashId(long hashId ){
+        BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
+
+        List<HashMap> hashMapList = hashMapRepository.findByHashId(hashId);
+        List<Bookmark> bookmarks = new ArrayList<>();
+        for ( HashMap hashMap : hashMapList) {
+            bookmarks.add(bookmarkRepository.findByBookmarkId(hashMap.getBookmarkId()));
+        }
+        bookmarkResponseDto.setBookmarkList(bookmarks);
+        return bookmarkResponseDto;
     }
 
     public HashResponseDto saveMappingHashAndBookmark(HashRequestDto hashRequestDto){
