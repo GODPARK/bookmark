@@ -2,6 +2,7 @@ package com.pjh.bookmark.controller;
 
 import com.pjh.bookmark.dto.HashRequestDto;
 import com.pjh.bookmark.dto.HashResponseDto;
+import com.pjh.bookmark.service.AuthService;
 import com.pjh.bookmark.service.HashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +14,17 @@ public class HashController {
     @Autowired
     private HashService hashService;
 
+    @Autowired
+    private AuthService authService;
+
     @GetMapping(path="/bookmark", produces = "application/json")
     public HashResponseDto getAllHashByBookmark(@RequestParam("bookmarkId") long bookmarkId){
         return hashService.selectByBookmark(bookmarkId);
     }
 
     @GetMapping(path="/user", produces = "application/json")
-    public HashResponseDto getAllHashByUser(@RequestParam("userId") long userId){
-        return hashService.selectByUser(userId);
+    public HashResponseDto getAllHashByUser(@RequestHeader("auth_token") String token){
+        return hashService.selectByUser(authService.tokenDecode(token));
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")

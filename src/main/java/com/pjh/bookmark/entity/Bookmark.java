@@ -80,4 +80,8 @@ public class Bookmark {
     public void setIsMain(int isMain) {
         this.isMain = isMain;
     }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 }

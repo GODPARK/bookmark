@@ -37,11 +37,12 @@ public class BookmarkService {
         return bookmarkResponseDto;
     }
 
-    public BookmarkResponseDto insertNew(BookmarkRequestDto bookmarkRequestDto){
+    public BookmarkResponseDto insertNew(BookmarkRequestDto bookmarkRequestDto, long userId){
 
         List<Bookmark> bookmarks = new ArrayList<>();
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         for (Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
+            indiBookmark.setUserId(userId);
             bookmarks.add(indiBookmark);
         }
         bookmarkRepository.saveAll(bookmarks);
@@ -49,11 +50,12 @@ public class BookmarkService {
         return bookmarkResponseDto;
     }
 
-    public BookmarkResponseDto update(BookmarkRequestDto bookmarkRequestDto){
+    public BookmarkResponseDto update(BookmarkRequestDto bookmarkRequestDto, long userId){
         //TODO: 하나만 업데이트 할 수 있도록 수정 필요
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         List<Bookmark> bookmarks = new ArrayList<>();
         for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
+            indiBookmark.setUserId(userId);
             indiBookmark.setState(1);
             bookmarks.add(indiBookmark);
         }
@@ -62,13 +64,14 @@ public class BookmarkService {
         return bookmarkResponseDto;
     }
 
-    public BookmarkResponseDto delete(BookmarkRequestDto bookmarkRequestDto){
+    public BookmarkResponseDto delete(BookmarkRequestDto bookmarkRequestDto, long userId){
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         List<Bookmark> bookmarks = new ArrayList<>();
         for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
-            Bookmark bookmark = bookmarkRepository.findByBookmarkId(indiBookmark.getBookmarkId());
+            Bookmark bookmark = bookmarkRepository.findByBookmarkIdAndUserId(indiBookmark.getBookmarkId(), userId);
             hashService.deleteMappingHashAndBookamrkByBookmarkDeleted(bookmark.getBookmarkId());
             bookmark.setState(0);
+            bookmark.setUserId(userId);
             bookmarks.add(bookmark);
         }
         bookmarkRepository.saveAll(bookmarks);

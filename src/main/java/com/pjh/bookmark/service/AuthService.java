@@ -1,6 +1,7 @@
 package com.pjh.bookmark.service;
 
 import com.pjh.bookmark.component.PasswordEncoding;
+import com.pjh.bookmark.component.TokenEncoding;
 import com.pjh.bookmark.dto.AuthRequestDto;
 import com.pjh.bookmark.dto.AuthResponseDto;
 import com.pjh.bookmark.entity.Token;
@@ -60,36 +61,24 @@ public class AuthService {
     }
 
     private String tokenEncode(long userId) {
-        try{
-            String rawToken = Integer.valueOf((int)(Math.random() * 1000000)) + "/" + Long.valueOf(userId) +"/bookmark";
-            byte[] byteRawToken = rawToken.getBytes("UTF-8");
-            Base64.Encoder encoder= Base64.getEncoder();
-            byte[] encodeToken = encoder.encode(byteRawToken);
-            return new String(encodeToken);
-        }
-        catch (IOException io){
-            throw new UnExpectedException("token encode error");
-        }
+        TokenEncoding tokenEncoding =  new TokenEncoding();
+        String rawToken = Integer.valueOf((int)(Math.random() * 1000000)) + "/" + Long.valueOf(userId) +"/bookmark";
+        return tokenEncoding.encrypt(rawToken);
     }
 
-    private int tokenDecode(String token){
+    public int tokenDecode(String token){
 
-        try{
-            Base64.Decoder decoder = Base64.getDecoder();
-            byte[] byteToken = decoder.decode(token);
-            String rawToken = new String(byteToken,"UTF-8");
-
+        try {
+            TokenEncoding tokenEncoding = new TokenEncoding();
+            String rawToken = tokenEncoding.decrypt(token);
             String[] decodedToken = rawToken.split("/");
-            if(decodedToken.length <= 1){
+            if (decodedToken.length <= 1) {
                 throw new UnAuthException();
             }
 
             int userId = Integer.valueOf(decodedToken[1]);
             return userId;
 
-        }
-        catch (IOException io){
-            throw new UnExpectedException("token decode error");
         }
         catch(IllegalArgumentException iae) {
             throw new UnAuthException();
