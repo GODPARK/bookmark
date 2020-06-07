@@ -28,8 +28,8 @@ public class HashController {
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
-    public HashResponseDto saveHash(@RequestBody HashRequestDto hashRequestDto){
-        return hashService.saveMappingHashAndBookmark(hashRequestDto);
+    public HashResponseDto saveHash(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
+        return hashService.saveMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token));
     }
 
     @DeleteMapping(path="", consumes = "application/json", produces = "application/json")

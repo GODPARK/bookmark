@@ -4,6 +4,8 @@ import com.pjh.bookmark.dto.BookmarkRequestDto;
 import com.pjh.bookmark.dto.BookmarkResponseDto;
 import com.pjh.bookmark.entity.Bookmark;
 import com.pjh.bookmark.entity.HashKey;
+import com.pjh.bookmark.exception.SuccessException;
+import com.pjh.bookmark.exception.UnExpectedException;
 import com.pjh.bookmark.repository.BookmarkRepository;
 import com.pjh.bookmark.repository.HashKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,18 @@ public class BookmarkService {
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         bookmarkResponseDto.setBookmarkList(bookmarkRepository.findByUserIdAndIsMainAndState(userId,1,1));
         return bookmarkResponseDto;
+    }
+
+    public void addBookmarkFrequency(long bookmarkId, long userId){
+        Bookmark bookmark = bookmarkRepository.findByBookmarkIdAndUserId(bookmarkId, userId);
+        if( bookmark != null){
+            bookmark.setFrequency(bookmark.getFrequency() + 1);
+            bookmarkRepository.save(bookmark);
+            throw new SuccessException("freq add success");
+        }
+        else {
+            throw new UnExpectedException("freq add fail");
+        }
     }
 
     public BookmarkResponseDto insertNew(BookmarkRequestDto bookmarkRequestDto, long userId){

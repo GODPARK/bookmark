@@ -60,18 +60,21 @@ public class HashService {
         return bookmarkResponseDto;
     }
 
-    public HashResponseDto saveMappingHashAndBookmark(HashRequestDto hashRequestDto){
+    public HashResponseDto saveMappingHashAndBookmark(HashRequestDto hashRequestDto, long userId){
 
         //Bookmark ID 존대 여부 확인
         if(bookmarkRepository.countByBookmarkIdAndState(hashRequestDto.getBookmarkId(),1) ==0 ){
             throw new HashException("Not Found By BookmarkId");
         }
 
+
         for( HashKey hashKey : hashRequestDto.getHashKeyList()){
             // 이미 존재하는 hash key 인지 확인
+            hashKey.setHashName(hashKey.getHashName().replace(" ","").toLowerCase());
             HashKey checkHash = hashKeyRepository.findByHashNameAndUserIdAndState(hashKey.getHashName(),hashKey.getUserId(),hashKey.getState());
             if(checkHash == null){
                 hashKey.setState(1);
+                hashKey.setUserId(userId);
                 checkHash = hashKeyRepository.save(hashKey);
             }
 

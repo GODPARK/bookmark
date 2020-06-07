@@ -73,6 +73,10 @@ public class Bookmark {
         return url;
     }
 
+    public long getFrequency() {
+        return frequency;
+    }
+
     public void setState(int state) {
         this.state = state;
     }
@@ -83,5 +87,9 @@ public class Bookmark {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public void setFrequency(long frequency) {
+        this.frequency = frequency;
     }
 }

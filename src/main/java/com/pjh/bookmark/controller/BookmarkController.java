@@ -42,6 +42,11 @@ public class BookmarkController {
         return hashService.selectByHashId(hashId);
     }
 
+    @GetMapping(path = "/freq", consumes = "*/*", produces = "*/*")
+    public void addFrequencyBookmark(@PathParam(value = "bookmarkId") long bookmarkId, @RequestHeader("auth_token") String token){
+        bookmarkService.addBookmarkFrequency(bookmarkId, authService.tokenDecode(token));
+    }
+
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
     public BookmarkResponseDto saveNewBookmarkByUser(@RequestBody BookmarkRequestDto bookmarkRequestDto, @RequestHeader("auth_token") String token){
         return bookmarkService.insertNew(bookmarkRequestDto, authService.tokenDecode(token));
