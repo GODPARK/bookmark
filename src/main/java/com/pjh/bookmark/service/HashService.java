@@ -71,7 +71,8 @@ public class HashService {
         for( HashKey hashKey : hashRequestDto.getHashKeyList()){
             // 이미 존재하는 hash key 인지 확인
             hashKey.setHashName(hashKey.getHashName().replace(" ","").toLowerCase());
-            HashKey checkHash = hashKeyRepository.findByHashNameAndUserIdAndState(hashKey.getHashName(),hashKey.getUserId(),hashKey.getState());
+            HashKey checkHash = hashKeyRepository.findByHashNameAndUserIdAndState(hashKey.getHashName(), userId,1);
+
             if(checkHash == null){
                 hashKey.setState(1);
                 hashKey.setUserId(userId);

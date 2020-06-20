@@ -19,6 +19,8 @@ class BookmarkApplicationTests {
 		String passEncrypt1 = tokenEncoding1.encrypt(pass);
 		System.out.println(passEncrypt1);
 		System.out.println(tokenEncoding1.decrypt(passEncrypt1));
+
+
 	}
 
 }
