@@ -19,6 +19,10 @@ public class Token {
     @Column(name="token_timestamp", nullable = false)
     private Date tokenTimestamp;
 
+    @OneToOne
+    @JoinColumn(name="user_id")
+    private User user;
+
     public String getToken() {
         return token;
     }
@@ -49,5 +53,9 @@ public class Token {
 
     public void setTokenTimestamp(Date tokenTimestamp) {
         this.tokenTimestamp = tokenTimestamp;
+    }
+
+    public User getUser() {
+        return user;
     }
 }

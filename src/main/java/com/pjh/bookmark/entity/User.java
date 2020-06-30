@@ -30,6 +30,9 @@ public class User {
     @Column(name="user_create", nullable = false)
     private Date userCreate;
 
+    @OneToOne(mappedBy = "user")
+    private Token token;
+
     public String getUserPassword() {
         return userPassword;
     }

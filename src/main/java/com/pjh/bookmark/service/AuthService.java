@@ -39,6 +39,17 @@ public class AuthService {
     public boolean accountValidator(String token){
         if(token != null){
             Token originToken = tokenRepository.findByUserId(this.tokenDecode(token));
+
+            if(originToken.getUser() != null){
+                if(originToken.getUser().getUserRole() < 10 ) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+
+            //만료 시간 체크
             if(originToken.getToken().equals(token) && originToken.getTokenExpire() == 1){
                 Date now = new Date();
                 long diff = (now.getTime() - originToken.getTokenTimestamp().getTime()) / (1000*60*60);
