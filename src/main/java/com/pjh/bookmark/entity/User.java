@@ -30,6 +30,9 @@ public class User {
     @Column(name="user_create", nullable = false)
     private Date userCreate;
 
+    @Column(name="user_agree", nullable = false)
+    private int userAgree;
+
     @OneToOne(mappedBy = "user")
     private Token token;
 
@@ -79,6 +82,14 @@ public class User {
 
     public void setUserRole(long userRole) {
         this.userRole = userRole;
+    }
+
+    public int getUserAgree() {
+        return userAgree;
+    }
+
+    public void setUserAgree(int userAgree) {
+        this.userAgree = userAgree;
     }
 
     public Date getUserCreate() {

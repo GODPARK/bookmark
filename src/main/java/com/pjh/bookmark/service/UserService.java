@@ -52,6 +52,7 @@ public class UserService {
             user.setState(1);
             user.setUserCreate(new Date());
             user.setUserRole(1);
+            user.setUserAgree(userRequestDto.getAgree());
 
             User saveUser = userRepository.save(user);
 

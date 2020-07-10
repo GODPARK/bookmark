@@ -8,6 +8,7 @@ public class UserRequestDto {
     private String f_password;
     private String s_password;
     private String name;
+    private int agree;
 
     public String getAccount() {
         return account;
@@ -23,5 +24,9 @@ public class UserRequestDto {
 
     public String getS_password() {
         return s_password;
+    }
+
+    public int getAgree() {
+        return agree;
     }
 }
