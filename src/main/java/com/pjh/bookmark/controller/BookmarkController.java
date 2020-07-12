@@ -6,9 +6,6 @@ import com.pjh.bookmark.dto.BookmarkResponseDto;
 import com.pjh.bookmark.service.AuthService;
 import com.pjh.bookmark.service.BookmarkService;
 import com.pjh.bookmark.service.HashService;
-import com.pjh.bookmark.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
