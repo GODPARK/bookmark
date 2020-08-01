@@ -2,7 +2,7 @@ package com.pjh.bookmark.dto;
 
 public class AuthResponseDto {
     private String token;
-    private long userId;
+    private String account;
 
     public String getToken() {
         return token;
@@ -12,11 +12,11 @@ public class AuthResponseDto {
         this.token = token;
     }
 
-    public long getUserId() {
-        return userId;
+    public String getAccount() {
+        return account;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setAccount(String account) {
+        this.account = account;
     }
 }
