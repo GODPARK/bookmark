@@ -3,8 +3,11 @@ package com.pjh.bookmark.controller;
 import com.pjh.bookmark.component.TokenEncoding;
 import com.pjh.bookmark.dto.BookmarkRequestDto;
 import com.pjh.bookmark.dto.BookmarkResponseDto;
+import com.pjh.bookmark.dto.CombinationRequestDto;
+import com.pjh.bookmark.dto.CombinationResponseDto;
 import com.pjh.bookmark.service.AuthService;
 import com.pjh.bookmark.service.BookmarkService;
+import com.pjh.bookmark.service.CombinationService;
 import com.pjh.bookmark.service.HashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,9 @@ public class BookmarkController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private CombinationService combinationService;
 
     @GetMapping(path="", consumes = "*/*", produces = "application/json")
     public BookmarkResponseDto getAllBookmarkByUser(@RequestHeader("auth_token") String token){
@@ -45,8 +51,8 @@ public class BookmarkController {
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
-    public BookmarkResponseDto saveNewBookmarkByUser(@RequestBody BookmarkRequestDto bookmarkRequestDto, @RequestHeader("auth_token") String token){
-        return bookmarkService.insertNew(bookmarkRequestDto, authService.tokenDecode(token));
+    public CombinationResponseDto saveNewBookmarkByUser(@RequestBody CombinationRequestDto combinationRequestDto, @RequestHeader("auth_token") String token){
+        return combinationService.bookmarkAndHashSave(combinationRequestDto,authService.tokenDecode(token));
     }
 
     @PatchMapping(path="", consumes = "application/json", produces = "application/json")

@@ -11,6 +11,7 @@ import com.pjh.bookmark.repository.HashKeyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,14 +53,14 @@ public class BookmarkService {
     }
 
     public BookmarkResponseDto insertNew(BookmarkRequestDto bookmarkRequestDto, long userId){
-
-        List<Bookmark> bookmarks = new ArrayList<>();
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
-        for (Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
-            indiBookmark.setUserId(userId);
-            bookmarks.add(indiBookmark);
-        }
-        bookmarkRepository.saveAll(bookmarks);
+        List<Bookmark> bookmarks = new ArrayList<>();
+
+        Bookmark saveBookmark = bookmarkRequestDto.getBookmark();
+        saveBookmark.setUserId(userId);
+
+        bookmarkRepository.save(saveBookmark);
+        bookmarks.add(saveBookmark);
         bookmarkResponseDto.setBookmarkList(bookmarks);
         return bookmarkResponseDto;
     }
@@ -68,12 +69,13 @@ public class BookmarkService {
         //TODO: 하나만 업데이트 할 수 있도록 수정 필요
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         List<Bookmark> bookmarks = new ArrayList<>();
-        for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
-            indiBookmark.setUserId(userId);
-            indiBookmark.setState(1);
-            bookmarks.add(indiBookmark);
-        }
-        bookmarkRepository.saveAll(bookmarks);
+
+        Bookmark updateBookmark = bookmarkRequestDto.getBookmark();
+        updateBookmark.setUserId(userId);
+        updateBookmark.setState(1);
+
+        bookmarkRepository.save(updateBookmark);
+        bookmarks.add(updateBookmark);
         bookmarkResponseDto.setBookmarkList(bookmarks);
         return bookmarkResponseDto;
     }
@@ -81,14 +83,16 @@ public class BookmarkService {
     public BookmarkResponseDto delete(BookmarkRequestDto bookmarkRequestDto, long userId){
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
         List<Bookmark> bookmarks = new ArrayList<>();
-        for ( Bookmark indiBookmark : bookmarkRequestDto.getBookmarkList()){
-            Bookmark bookmark = bookmarkRepository.findByBookmarkIdAndUserId(indiBookmark.getBookmarkId(), userId);
-            hashService.deleteMappingHashAndBookamrkByBookmarkDeleted(bookmark.getBookmarkId());
-            bookmark.setState(0);
-            bookmark.setUserId(userId);
-            bookmarks.add(bookmark);
-        }
-        bookmarkRepository.saveAll(bookmarks);
+
+        Bookmark deleteBookmark = bookmarkRequestDto.getBookmark();
+        bookmarkRepository.findByBookmarkIdAndUserId(deleteBookmark.getBookmarkId(), userId);
+        hashService.deleteMappingHashAndBookamrkByBookmarkDeleted(deleteBookmark.getBookmarkId());
+        deleteBookmark.setState(0);
+        deleteBookmark.setUserId(userId);
+
+
+        bookmarkRepository.save(deleteBookmark);
+        bookmarks.add(deleteBookmark);
         bookmarkResponseDto.setBookmarkList(bookmarks);
         return bookmarkResponseDto;
     }

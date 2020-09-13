@@ -1,18 +1,19 @@
 package com.pjh.bookmark.dto;
 
 import com.pjh.bookmark.entity.Bookmark;
+import com.pjh.bookmark.entity.HashKey;
 
 import java.util.List;
 
 public class BookmarkRequestDto {
-    public List<Bookmark> bookmarkList;
+    private Bookmark bookmark;
 
-    public List<Bookmark> getBookmarkList() {
-        return bookmarkList;
+    public void setBookmark(Bookmark bookmark) {
+        this.bookmark = bookmark;
     }
 
-    public void setBookmarkList(List<Bookmark> bookmarkList) {
-        this.bookmarkList = bookmarkList;
+    public Bookmark getBookmark() {
+        return bookmark;
     }
 
     @Override
