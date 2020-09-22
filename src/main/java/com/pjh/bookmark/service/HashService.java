@@ -128,4 +128,10 @@ public class HashService {
             hashKeyRepository.save(hashKey);
         }
     }
+
+    public HashResponseDto mainHashListByUserId(long userId) {
+        HashResponseDto hashResponseDto = new HashResponseDto();
+        hashResponseDto.setHashKeyList(hashKeyRepository.findByUserIdAndHashMain(userId,1));
+        return hashResponseDto;
+    }
 }

@@ -27,6 +27,11 @@ public class HashController {
         return hashService.selectByUser(authService.tokenDecode(token));
     }
 
+    @GetMapping(path="/main", produces = "application/json")
+    public HashResponseDto getMainHashByUser(@RequestHeader("auth_token") String token){
+        return hashService.mainHashListByUserId(authService.tokenDecode(token));
+    }
+
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
     public HashResponseDto saveHash(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
         return hashService.saveMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token));

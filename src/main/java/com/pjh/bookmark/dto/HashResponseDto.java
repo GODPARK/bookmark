@@ -5,7 +5,7 @@ import com.pjh.bookmark.entity.HashKey;
 import java.util.List;
 
 public class HashResponseDto {
-    List<HashKey> hashKeyList;
+    private List<HashKey> hashKeyList;
 
     public List<HashKey> getHashKeyList() {
         return hashKeyList;

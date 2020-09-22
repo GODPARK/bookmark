@@ -16,6 +16,9 @@ public class HashKey {
     @Column(name="hash_state", nullable = false)
     private int state;
 
+    @Column(name="hash_main", nullable = false)
+    private int hashMain;
+
     @Column(name="user_id", nullable = false)
     private long userId;
 
@@ -39,6 +42,10 @@ public class HashKey {
         this.state = state;
     }
 
+    public void setHashMain(int hashMain) {
+        this.hashMain = hashMain;
+    }
+
     public int getState() {
         return state;
     }
@@ -53,5 +60,9 @@ public class HashKey {
 
     public String getHashName() {
         return hashName;
+    }
+
+    public int getHashMain() {
+        return hashMain;
     }
 }
