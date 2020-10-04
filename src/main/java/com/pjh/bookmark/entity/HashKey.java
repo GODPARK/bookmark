@@ -23,6 +23,7 @@ public class HashKey {
     private long userId;
 
     public HashKey(){
+        this.hashMain = 0;
         this.state = 1;
     }
 

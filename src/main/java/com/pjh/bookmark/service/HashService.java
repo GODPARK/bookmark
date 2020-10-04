@@ -91,6 +91,45 @@ public class HashService {
         return this.selectByBookmark(hashRequestDto.getBookmarkId());
     }
 
+    public HashResponseDto saveHashKey(HashRequestDto hashRequestDto, long userId) {
+        List<HashKey> hashKeyList = new ArrayList<>();
+        HashResponseDto hashResponseDto = new HashResponseDto();
+        for ( HashKey hashKey : hashRequestDto.getHashKeyList()) {
+            if( hashKey.getHashName().equals("")) {
+                throw new HashException("hash key name is empty");
+            }
+
+            // 이미 존재하는 hash key 인지 확인
+            hashKey.setHashName(hashKey.getHashName().replace(" ","").toLowerCase());
+            HashKey checkHash = hashKeyRepository.findByHashNameAndUserIdAndState(hashKey.getHashName(), userId,1);
+
+            if(checkHash == null){
+                hashKey.setState(1);
+                hashKey.setUserId(userId);
+                checkHash = hashKeyRepository.save(hashKey);
+                hashKeyList.add(checkHash);
+                hashResponseDto.setHashKeyList(hashKeyList);
+            }
+        }
+        return hashResponseDto;
+    }
+
+    public HashResponseDto updateHashKey(HashRequestDto hashRequestDto, long userId) {
+        List<HashKey> hashKeyList = new ArrayList<>();
+        for ( HashKey hashKey : hashRequestDto.getHashKeyList()) {
+            HashKey targetHash  = hashKeyRepository.findByHashIdAndUserId(hashKey.getHashId(), userId);
+            if(targetHash != null) {
+                targetHash.setHashName(hashKey.getHashName());
+                targetHash.setHashMain(hashKey.getHashMain());
+                HashKey resultHash = hashKeyRepository.save(targetHash);
+                hashKeyList.add(resultHash);
+            }
+        }
+        HashResponseDto hashResponseDto = new HashResponseDto();
+        hashResponseDto.setHashKeyList(hashKeyList);
+        return hashResponseDto;
+    }
+
     public HashResponseDto deleteMappingHash(HashRequestDto hashRequestDto) {
         List<HashMap> hashMapList = new ArrayList<>();
         for ( HashKey hashKey: hashRequestDto.getHashKeyList()){

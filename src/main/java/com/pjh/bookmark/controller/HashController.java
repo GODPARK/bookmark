@@ -32,9 +32,19 @@ public class HashController {
         return hashService.mainHashListByUserId(authService.tokenDecode(token));
     }
 
+    @PostMapping(path="/map", consumes = "application/json", produces = "application/json")
+    public HashResponseDto mappingHash(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
+        return hashService.saveMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token));
+    }
+
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
     public HashResponseDto saveHash(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
-        return hashService.saveMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token));
+        return hashService.saveHashKey(hashRequestDto,authService.tokenDecode(token));
+    }
+
+    @PutMapping(path="", consumes = "application/json", produces = "application/json")
+    public HashResponseDto updateHash(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
+        return hashService.updateHashKey(hashRequestDto,authService.tokenDecode(token));
     }
 
     @DeleteMapping(path="", consumes = "application/json", produces = "application/json")

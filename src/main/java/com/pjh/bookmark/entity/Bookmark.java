@@ -39,6 +39,7 @@ public class Bookmark {
     public Bookmark(){
         this.state = 1;
         this.frequency = 0;
+        this.isMain = 0;
     }
 
     public long getUserId() {
