@@ -78,6 +78,11 @@ public class HashService {
                 hashKey.setUserId(userId);
                 checkHash = hashKeyRepository.save(hashKey);
             }
+            else {
+                if(hashKey.getHashId() != checkHash.getHashId()) {
+                    throw new HashException("wrong hash infomation");
+                }
+            }
 
             HashMap hashMap = new HashMap();
             hashMap.setBookmarkId(hashRequestDto.getBookmarkId());
