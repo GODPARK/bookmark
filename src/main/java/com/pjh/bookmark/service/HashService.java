@@ -12,6 +12,8 @@ import com.pjh.bookmark.repository.BookmarkRepository;
 import com.pjh.bookmark.repository.HashKeyRepository;
 import com.pjh.bookmark.repository.HashMapRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -160,17 +162,20 @@ public class HashService {
         }
     }
 
-    public void deleteMappingHashAndBookmarkByHashKeyDeleted(long hashId) {
-        List<HashMap> hashMapList = hashMapRepository.findByHashId(hashId);
-        if(hashMapList.isEmpty()){
-            throw new HashException("Not Found By HashId");
+    public ResponseEntity deleteMappingHashAndBookmarkByHashKeyDeleted(HashRequestDto hashRequestDto) {
+        for( HashKey hashKey : hashRequestDto.getHashKeyList()) {
+            List<HashMap> hashMapList = hashMapRepository.findByHashId(hashKey.getHashId());
+            if(!hashMapList.isEmpty()){
+                hashMapRepository.deleteAll(hashMapList);
+            }
+
+            HashKey deleteHashKey = hashKeyRepository.findByHashIdAndState(hashKey.getHashId(), 1);
+            if(deleteHashKey != null) {
+                deleteHashKey.setState(0);
+                hashKeyRepository.save(deleteHashKey);
+            }
         }
-        else {
-            hashMapRepository.deleteAll(hashMapList);
-            HashKey hashKey = hashKeyRepository.findByHashIdAndState(hashId,1);
-            hashKey.setState(0);
-            hashKeyRepository.save(hashKey);
-        }
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     public HashResponseDto mainHashListByUserId(long userId) {

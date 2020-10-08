@@ -5,6 +5,7 @@ import com.pjh.bookmark.dto.HashResponseDto;
 import com.pjh.bookmark.service.AuthService;
 import com.pjh.bookmark.service.HashService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,7 +49,7 @@ public class HashController {
     }
 
     @DeleteMapping(path="", consumes = "application/json", produces = "application/json")
-    public HashResponseDto deleteHash(@RequestBody HashRequestDto hashRequestDto){
-        return hashService.deleteMappingHash(hashRequestDto);
+    public ResponseEntity deleteHash(@RequestBody HashRequestDto hashRequestDto){
+        return hashService.deleteMappingHashAndBookmarkByHashKeyDeleted(hashRequestDto);
     }
 }
