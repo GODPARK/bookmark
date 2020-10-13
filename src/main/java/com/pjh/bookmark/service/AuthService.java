@@ -40,45 +40,36 @@ public class AuthService {
         if(token != null){
             Token originToken = tokenRepository.findByUserId(this.tokenDecode(token));
 
-            if(originToken.getUser() != null){
-                if(originToken.getUser().getUserRole() < 10 ) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
+            if(originToken.getUser() == null) return false;
+            if(originToken.getUser().getUserRole() < 10 ) return false;
+            if(!originToken.getToken().equals(token)) return false;
 
             //만료 시간 체크
-            if(originToken.getToken().equals(token) && originToken.getTokenExpire() == 1){
-                Date now = new Date();
-                long diff = (now.getTime() - originToken.getTokenTimestamp().getTime()) / (1000*60*60);
-
-                if(diff > this.expireHourLimit){
-                    originToken.setTokenExpire(0);
-                    originToken.setToken("");
-                    tokenRepository.save(originToken);
-                    return false;
-                }
-                return true;
-            }
-            else{
+            if(this.isTokenExpired(originToken)){
+                originToken.setTokenExpire(0);
+                tokenRepository.save(originToken);
                 return false;
             }
+            return true;
         }
-        else{
-            return false;
-        }
+        return false;
+    }
+
+    private boolean isTokenExpired(Token checkToken) {
+        Date now = new Date();
+        long diff = (now.getTime() - checkToken.getTokenTimestamp().getTime()) / (1000*60*60);
+        return (diff > this.expireHourLimit || checkToken.getTokenExpire() == 0);
     }
 
     private String tokenEncode(long userId) {
         TokenEncoding tokenEncoding =  new TokenEncoding();
-        String rawToken = Integer.valueOf((int)(Math.random() * 1000000)) + "/" + Long.valueOf(userId) +"/bookmark";
+        String rawToken = Integer.valueOf((int)(Math.random() * 1000000)) +
+                "/" + Long.valueOf(userId) +
+                "/bookmark" + Integer.valueOf((int)(Math.random() * 10000));
         return tokenEncoding.encrypt(rawToken);
     }
 
     public int tokenDecode(String token){
-
         try {
             TokenEncoding tokenEncoding = new TokenEncoding();
             String rawToken = tokenEncoding.decrypt(token);
@@ -86,10 +77,8 @@ public class AuthService {
             if (decodedToken.length <= 1) {
                 throw new UnAuthException();
             }
-
             int userId = Integer.valueOf(decodedToken[1]);
             return userId;
-
         }
         catch(IllegalArgumentException iae) {
             throw new UnAuthException();
@@ -104,23 +93,25 @@ public class AuthService {
         else{
             if(passwordEncoding.matches(authRequestDto.getPassword(),user.getUserPassword())){
                 AuthResponseDto authResponseDto = new AuthResponseDto();
-
-                String offeredToken = tokenEncode(user.getUserId());
-
-                authResponseDto.setToken(offeredToken);
-                authResponseDto.setAccount(user.getUserAccount());
-
                 Token token = tokenRepository.findByUserId(user.getUserId());
-
                 if(token == null){
                     throw new UnAuthException();
                 }
-
-                token.setToken(offeredToken);
-                token.setTokenExpire(1);
-                token.setTokenTimestamp(new Date());
-                tokenRepository.save(token);
-
+                //token 만료되 었는지 검사
+                if(!this.isTokenExpired(token)) {
+                    //만료되지 않았다면, 기존 토큰 전달
+                    authResponseDto.setToken(token.getToken());
+                }
+                else {
+                    //만료되었을 경우 토큰 재생성
+                    String offeredToken = this.tokenEncode(user.getUserId());
+                    authResponseDto.setToken(offeredToken);
+                    token.setToken(offeredToken);
+                    token.setTokenExpire(1);
+                    token.setTokenTimestamp(new Date());
+                    tokenRepository.save(token);
+                }
+                authResponseDto.setAccount(user.getUserAccount());
                 return authResponseDto;
             }
             else{
