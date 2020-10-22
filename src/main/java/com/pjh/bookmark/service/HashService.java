@@ -63,13 +63,10 @@ public class HashService {
     }
 
     public HashResponseDto saveMappingHashAndBookmark(HashRequestDto hashRequestDto, long userId){
-
         //Bookmark ID 존대 여부 확인
         if(bookmarkRepository.countByBookmarkIdAndState(hashRequestDto.getBookmarkId(),1) ==0 ){
             throw new HashException("Not Found By BookmarkId");
         }
-
-
         for( HashKey hashKey : hashRequestDto.getHashKeyList()){
             // 이미 존재하는 hash key 인지 확인
             hashKey.setHashName(hashKey.getHashName().replace(" ","").toLowerCase());
@@ -93,6 +90,42 @@ public class HashService {
             // 이미 매핑 이력 있는지 조사
             if(hashMapRepository.countByHashIdAndBookmarkId(checkHash.getHashId(),hashRequestDto.getBookmarkId()) == 0){
                 hashMapRepository.save(hashMap);
+            }
+        }
+        return this.selectByBookmark(hashRequestDto.getBookmarkId());
+    }
+
+    public HashResponseDto editMappingHashAndBookmark(HashRequestDto hashRequestDto, long userId){
+        if(bookmarkRepository.countByBookmarkIdAndState(hashRequestDto.getBookmarkId(),1) ==0 ){
+            throw new HashException("Not Found By BookmarkId");
+        }
+        List<HashMap> currentHashMapList = hashMapRepository.findByBookmarkId(hashRequestDto.getBookmarkId());
+        List<Long> dbHashIdList = new ArrayList<>();
+        List<Long> requestHashIdList = new ArrayList<>();
+        for ( HashMap hashMap : currentHashMapList) {
+            dbHashIdList.add(hashMap.getHashId());
+        }
+        for (HashKey hashKey: hashRequestDto.getHashKeyList()) {
+            requestHashIdList.add(hashKey.getHashId());
+        }
+        if (requestHashIdList.containsAll(dbHashIdList) && dbHashIdList.containsAll(requestHashIdList)) {
+            return this.selectByBookmark(hashRequestDto.getBookmarkId());
+        }
+        else {
+            List<Long> deleteTargetList = new ArrayList<>(dbHashIdList);
+            List<Long> createTargetList = new ArrayList<>(requestHashIdList);
+            deleteTargetList.removeAll(requestHashIdList);
+            createTargetList.removeAll(dbHashIdList);
+            for ( Long deleteId : deleteTargetList) {
+                hashMapRepository.deleteByHashIdAndBookmarkId(deleteId, hashRequestDto.getBookmarkId());
+            }
+            for ( Long createId : createTargetList) {
+               HashMap createHashMap = new HashMap();
+               createHashMap.setHashId(createId);
+               createHashMap.setBookmarkId(hashRequestDto.getBookmarkId());
+               if(hashMapRepository.countByHashIdAndBookmarkId(createHashMap.getHashId(),hashRequestDto.getBookmarkId()) == 0){
+                   hashMapRepository.save(createHashMap);
+               }
             }
         }
         return this.selectByBookmark(hashRequestDto.getBookmarkId());

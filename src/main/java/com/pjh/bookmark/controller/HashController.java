@@ -38,6 +38,11 @@ public class HashController {
         return hashService.saveMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token));
     }
 
+    @PatchMapping(path="/map", consumes = "application/json", produces = "application/json")
+    public HashResponseDto editMappingHash(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
+        return hashService.editMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token));
+    }
+
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
     public HashResponseDto saveHash(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
         return hashService.saveHashKey(hashRequestDto,authService.tokenDecode(token));
