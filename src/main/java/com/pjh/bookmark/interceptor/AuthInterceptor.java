@@ -19,8 +19,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object handler){
-
-        if(this.authService.accountValidator(httpServletRequest.getHeader("auth_token"))){
+        String authToken = httpServletRequest.getHeader("auth_token");
+        if(authToken == null || authToken.equals("")) throw new UnAuthException("token missing");
+        if(this.authService.accountValidator(authToken)){
             return true;
         }
         else{
