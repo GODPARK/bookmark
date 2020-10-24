@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -50,7 +51,7 @@ public class HashService {
         return hashResponseDto;
     }
 
-    public BookmarkResponseDto selectByHashId(long hashId ){
+    public BookmarkResponseDto selectByHashId(long hashId){
         BookmarkResponseDto bookmarkResponseDto = new BookmarkResponseDto();
 
         List<HashMap> hashMapList = hashMapRepository.findByHashId(hashId);
@@ -58,6 +59,14 @@ public class HashService {
         for ( HashMap hashMap : hashMapList) {
             bookmarks.add(bookmarkRepository.findByBookmarkId(hashMap.getBookmarkId()));
         }
+        bookmarks.sort(new Comparator<Bookmark>() {
+            @Override
+            public int compare(Bookmark o1, Bookmark o2) {
+                if ( o1.getFrequency() == o2.getFrequency()) return 0;
+                else if(o1.getFrequency() < o2.getFrequency()) return 1;
+                else return -1;
+            }
+        });
         bookmarkResponseDto.setBookmarkList(bookmarks);
         return bookmarkResponseDto;
     }
@@ -213,7 +222,14 @@ public class HashService {
 
     public HashResponseDto mainHashListByUserId(long userId) {
         HashResponseDto hashResponseDto = new HashResponseDto();
-        hashResponseDto.setHashKeyList(hashKeyRepository.findByUserIdAndHashMain(userId,1));
+        List<HashKey> hashKeyList = hashKeyRepository.findByUserIdAndHashMain(userId,1);
+        hashKeyList.sort(new Comparator<HashKey>() {
+            @Override
+            public int compare(HashKey o1, HashKey o2) {
+                return o1.getHashName().compareTo(o2.getHashName());
+            }
+        });
+        hashResponseDto.setHashKeyList(hashKeyList);
         return hashResponseDto;
     }
 }
