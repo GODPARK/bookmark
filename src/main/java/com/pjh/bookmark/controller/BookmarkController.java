@@ -31,38 +31,43 @@ public class BookmarkController {
     private CombinationService combinationService;
 
     @GetMapping(path="", consumes = "*/*", produces = "application/json")
-    public BookmarkResponseDto getAllBookmarkByUser(@RequestHeader("auth_token") String token){
-        return bookmarkService.selectAll(authService.tokenDecode(token));
+    public BookmarkResponseDto getTotalBookmarkListApi(@RequestHeader("auth_token") String token){
+        return bookmarkService.totalBookmarkListFunc(authService.tokenDecode(token));
     }
 
     @GetMapping(path="/main", consumes = "*/*", produces = "application/json")
-    public BookmarkResponseDto getMainBookmarkByUser(@RequestHeader("auth_token") String token){
-        return bookmarkService.selectMain(authService.tokenDecode(token));
+    public BookmarkResponseDto getMainBookmarkListApi(@RequestHeader("auth_token") String token){
+        return bookmarkService.mainBookmarkListFunc(authService.tokenDecode(token));
     }
 
     @GetMapping(path="/hash", consumes = "*/*", produces = "application/json")
-    public BookmarkResponseDto getBookmarkByHash(@PathParam(value="hashId") long hashId){
-        return hashService.selectByHashId(hashId);
+    public BookmarkResponseDto getBookmarkListByHashIdApi(@PathParam(value="hashId") long hashId){
+        return hashService.bookmarkListByHashKeyFunc(hashId);
+    }
+
+    @GetMapping(path="/unmapped", consumes = "*/*", produces = "application/json")
+    public BookmarkResponseDto getBookmarkListNotHashMapApi(@RequestHeader("auth_token") String token) {
+        return bookmarkService.bookmarkListNotHashMapFunc(authService.tokenDecode(token));
     }
 
     @GetMapping(path = "/freq", consumes = "*/*", produces = "*/*")
-    public void addFrequencyBookmark(@PathParam(value = "bookmarkId") long bookmarkId, @RequestHeader("auth_token") String token){
-        bookmarkService.addBookmarkFrequency(bookmarkId, authService.tokenDecode(token));
+    public void addFrequencyByBookmarkIdApi(@PathParam(value = "bookmarkId") long bookmarkId, @RequestHeader("auth_token") String token){
+        bookmarkService.addBookmarkFrequencyFunc(bookmarkId, authService.tokenDecode(token));
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
-    public CombinationResponseDto saveNewBookmarkByUser(@RequestBody CombinationRequestDto combinationRequestDto, @RequestHeader("auth_token") String token){
+    public CombinationResponseDto postCreateNewBookmarkApi(@RequestBody CombinationRequestDto combinationRequestDto, @RequestHeader("auth_token") String token){
         return combinationService.bookmarkAndHashSave(combinationRequestDto,authService.tokenDecode(token));
     }
 
     @PatchMapping(path="", consumes = "application/json", produces = "application/json")
-    public BookmarkResponseDto updateBookmarkByUser(@RequestBody BookmarkRequestDto bookmarkRequestDto, @RequestHeader("auth_token") String token){
-        return bookmarkService.update(bookmarkRequestDto, authService.tokenDecode(token));
+    public BookmarkResponseDto patchBookmarkApi(@RequestBody BookmarkRequestDto bookmarkRequestDto, @RequestHeader("auth_token") String token){
+        return bookmarkService.updateBookmarkFunc(bookmarkRequestDto, authService.tokenDecode(token));
     }
 
     @DeleteMapping(path="", consumes = "application/json", produces = "application/json")
-    public BookmarkResponseDto deleteBookmarkByUser(@RequestBody BookmarkRequestDto bookmarkRequestDto, @RequestHeader("auth_token") String token){
-        return bookmarkService.delete(bookmarkRequestDto, authService.tokenDecode(token));
+    public BookmarkResponseDto deleteBookmarkApi(@RequestBody BookmarkRequestDto bookmarkRequestDto, @RequestHeader("auth_token") String token){
+        return bookmarkService.deleteBookmarkFunc(bookmarkRequestDto, authService.tokenDecode(token));
     }
 
 }

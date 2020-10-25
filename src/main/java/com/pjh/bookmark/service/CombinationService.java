@@ -8,26 +8,22 @@ import org.springframework.stereotype.Service;
 public class CombinationService {
 
     @Autowired
-    BookmarkService bookmarkService;
+    private BookmarkService bookmarkService;
 
     @Autowired
-    HashService hashService;
+    private HashService hashService;
 
     public CombinationResponseDto bookmarkAndHashSave(CombinationRequestDto combinationRequestDto, long userId) {
 
-        CombinationResponseDto combinationResponseDto = new CombinationResponseDto();
-
         BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto();
         bookmarkRequestDto.setBookmark(combinationRequestDto.getBookmark());
-        BookmarkResponseDto bookmarkResponseDto = bookmarkService.insertNew(bookmarkRequestDto, userId);
+        BookmarkResponseDto bookmarkResponseDto = bookmarkService.createBookmarkFunc(bookmarkRequestDto, userId);
 
         HashRequestDto hashRequestDto = new HashRequestDto();
         hashRequestDto.setHashKeyList(combinationRequestDto.getHashKeyList());
         hashRequestDto.setBookmarkId(bookmarkResponseDto.getBookmarkList().get(0).getBookmarkId());
-        HashResponseDto hashResponseDto = hashService.saveMappingHashAndBookmark(hashRequestDto,userId);
+        HashResponseDto hashResponseDto = hashService.createHashMapAndBookmarkFunc(hashRequestDto,userId);
 
-        combinationResponseDto.setBookmarkList(bookmarkResponseDto.getBookmarkList());
-        combinationRequestDto.setHashKeyList(hashResponseDto.getHashKeyList());
-        return combinationResponseDto;
+        return new CombinationResponseDto(bookmarkResponseDto.getBookmarkList(), hashResponseDto.getHashKeyList());
     }
 }

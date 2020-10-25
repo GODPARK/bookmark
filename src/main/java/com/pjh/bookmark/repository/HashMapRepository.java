@@ -2,6 +2,7 @@ package com.pjh.bookmark.repository;
 
 import com.pjh.bookmark.entity.HashMap;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,4 +16,7 @@ public interface HashMapRepository  extends JpaRepository<HashMap, Long> {
     HashMap findByHashIdAndBookmarkId(long hashId, long bookmarkId);
     List<HashMap> findByBookmarkId(long bookmarkId);
     List<HashMap> findByHashId(long hashId);
+
+    @Query("SELECT hm.bookmarkId FROM HashMap hm")
+    List<Long> findALLOnlyBookmarkId();
 }
