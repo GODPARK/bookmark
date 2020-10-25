@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface WorkRepository extends JpaRepository<Work, Long> {
-//    List<Work> findByworkState(int state);
-//    Work findByWorkIdAndworkState(long workId, int state);
+    List<Work> findByWorkState(int state);
+    Work findByWorkIdAndWorkState(long workId, int state);
 }
