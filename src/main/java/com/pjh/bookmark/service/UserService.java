@@ -16,6 +16,11 @@ import java.util.Date;
 @Service
 public class UserService {
 
+    private static final int LIVE_USER_STATE = 1;
+    private static final int DEFAULT_USER_ROLE_NUM =1;
+    private static final int LIVE_TOKEN_STATE = 1;
+    private static final int EXPIRE_TOKEN_STATE = 0;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -49,9 +54,9 @@ public class UserService {
 
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             user.setUserPassword(passwordEncoder.encode(userRequestDto.getF_password()));
-            user.setState(1);
+            user.setState(LIVE_USER_STATE);
             user.setUserCreate(new Date());
-            user.setUserRole(1);
+            user.setUserRole(DEFAULT_USER_ROLE_NUM);
             user.setUserAgree(userRequestDto.getAgree());
 
             User saveUser = userRepository.save(user);
@@ -59,7 +64,7 @@ public class UserService {
             Token token = new Token();
             token.setUserId(saveUser.getUserId());
             token.setToken("");
-            token.setTokenExpire(0);
+            token.setTokenExpire(EXPIRE_TOKEN_STATE);
             token.setTokenTimestamp(new Date());
 
             tokenRepository.save(token);

@@ -18,7 +18,7 @@ public class AdminController {
     AuthService authService;
 
     @PostMapping(path = "/user/role", consumes = "application/json", produces = "application/json")
-    public ResponseEntity userRoleChange(@RequestBody AdminUserRequestDto adminUserRequestDto, @RequestHeader("auth_token") String token) {
+    public ResponseEntity postUserRoleChangeApi(@RequestBody AdminUserRequestDto adminUserRequestDto, @RequestHeader("auth_token") String token) {
         return adminService.userRoleChange(adminUserRequestDto,authService.tokenDecode(token));
     }
 }

@@ -13,7 +13,7 @@ import java.util.Date;
 public class SearchService {
 
     @Autowired
-    SearchRepository searchRepository;
+    private SearchRepository searchRepository;
 
     public void saveSearchRecord(SearchRequestDto searchRequestDto, long userId) {
         Search search = searchRequestDto.getSearch();

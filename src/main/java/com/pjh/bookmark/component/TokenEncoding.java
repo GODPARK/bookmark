@@ -17,13 +17,14 @@ public class TokenEncoding {
     private String iv;
     private Key key;
 
-    final static String secretKey = "iloveleebitna1228";
+    private final static String SECRET_KEY = "iloveleebitna1228";
+    private final static String ENCRYPT_PROTOCOL = "AES/CBC/PKCS5Padding";
 
     public TokenEncoding() {
         try{
-            this.iv = secretKey.substring(0,16);
+            this.iv = SECRET_KEY.substring(0,16);
             byte[] keyBytes = new byte[16];
-            byte[] b = secretKey.getBytes("UTF-8");
+            byte[] b = SECRET_KEY.getBytes("UTF-8");
             int len = b.length;
 
             if ( len > keyBytes.length ){
@@ -41,7 +42,7 @@ public class TokenEncoding {
 
     public String encrypt(String str) {
         try{
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance(ENCRYPT_PROTOCOL);
             cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv.getBytes()));
             byte[] encrypted = cipher.doFinal(str.getBytes("UTF-8"));
             Base64.Encoder encoder = Base64.getEncoder();
@@ -61,7 +62,7 @@ public class TokenEncoding {
 
     public String decrypt(String str) {
         try{
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance(ENCRYPT_PROTOCOL);
             cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv.getBytes()));
             Base64.Decoder decoder = Base64.getDecoder();
             byte[] bytes = decoder.decode(str.getBytes());

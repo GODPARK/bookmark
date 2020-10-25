@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/auth")
 public class AuthController {
 
-
     @Autowired
     private AuthService authService;
 
@@ -23,17 +22,17 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping(value = "/sign-in", consumes = "application/json", produces = "application/json")
-    public AuthResponseDto signIn(@RequestBody AuthRequestDto authRequestDto){
+    public AuthResponseDto postSignInApi(@RequestBody AuthRequestDto authRequestDto){
         return authService.login(authRequestDto);
     }
 
     @PostMapping(value="/sign-up", consumes = "application/json", produces = "application/json")
-    public ResponseEntity signUp(@RequestBody UserRequestDto userRequestDto){
+    public ResponseEntity postSignUpApi(@RequestBody UserRequestDto userRequestDto){
         return userService.signUp(userRequestDto);
     }
 
     @PostMapping(value="/logout", produces = "application/json")
-    public ResponseEntity logout(HttpServletRequest httpServletRequest){
+    public ResponseEntity postLogoutApi(HttpServletRequest httpServletRequest){
         return authService.logout(httpServletRequest);
     }
 }

@@ -9,6 +9,12 @@ public class CombinationResponseDto {
     private List<Bookmark> bookmarkList;
     private List<HashKey> hashKeyList;
 
+    public CombinationResponseDto() {}
+    public CombinationResponseDto(List<Bookmark> bookmarkList, List<HashKey> hashKeyList) {
+        this.bookmarkList = bookmarkList;
+        this.hashKeyList = hashKeyList;
+    }
+
     public List<HashKey> getHashKeyList() {
         return hashKeyList;
     }

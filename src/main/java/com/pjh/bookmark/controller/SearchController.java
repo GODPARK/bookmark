@@ -17,7 +17,7 @@ public class SearchController {
     private AuthService authService;
 
     @PostMapping(path = "/record", consumes = "application/json", produces = "*/*")
-    public void saveSearchRecordByUser(@RequestBody SearchRequestDto searchRequestDto, @RequestHeader("auth_token") String token) {
+    public void postCreateSearchByUserApi(@RequestBody SearchRequestDto searchRequestDto, @RequestHeader("auth_token") String token) {
         searchService.saveSearchRecord(searchRequestDto, authService.tokenDecode(token));
     }
 }

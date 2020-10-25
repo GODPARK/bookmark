@@ -27,14 +27,17 @@ public class AuthService {
     @Value("${auth.expire.hour.limit}")
     private long expireHourLimit;
 
-    @Autowired
-    UserRepository userRepository;
+    private static final int LIVE_TOKEN_STATE = 1;
+    private static final int EXPIRE_TOKEN_STATE = 0;
 
     @Autowired
-    TokenRepository tokenRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    PasswordEncoding passwordEncoding;
+    private TokenRepository tokenRepository;
+
+    @Autowired
+    private PasswordEncoding passwordEncoding;
 
     public boolean accountValidator(String token){
         if(token != null){
@@ -46,7 +49,7 @@ public class AuthService {
 
             //만료 시간 체크
             if(this.isTokenExpired(originToken)){
-                originToken.setTokenExpire(0);
+                originToken.setTokenExpire(EXPIRE_TOKEN_STATE);
                 tokenRepository.save(originToken);
                 return false;
             }
@@ -107,7 +110,7 @@ public class AuthService {
                     String offeredToken = this.tokenEncode(user.getUserId());
                     authResponseDto.setToken(offeredToken);
                     token.setToken(offeredToken);
-                    token.setTokenExpire(1);
+                    token.setTokenExpire(LIVE_TOKEN_STATE);
                     token.setTokenTimestamp(new Date());
                     tokenRepository.save(token);
                 }
@@ -127,7 +130,7 @@ public class AuthService {
             int userId = this.tokenDecode(token);
 
             Token logoutToken = tokenRepository.findByUserId(userId);
-            logoutToken.setTokenExpire(0);
+            logoutToken.setTokenExpire(EXPIRE_TOKEN_STATE);
             logoutToken.setToken("");
             tokenRepository.save(logoutToken);
 
