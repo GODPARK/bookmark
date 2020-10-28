@@ -1,13 +1,11 @@
 package com.pjh.bookmark.service;
 
-import com.pjh.bookmark.dto.BookmarkRequestDto;
-import com.pjh.bookmark.dto.BookmarkResponseDto;
 import com.pjh.bookmark.dto.HashRequestDto;
-import com.pjh.bookmark.dto.HashResponseDto;
 import com.pjh.bookmark.entity.Bookmark;
 import com.pjh.bookmark.entity.HashKey;
 import com.pjh.bookmark.entity.HashMap;
 import com.pjh.bookmark.exception.HashException;
+import com.pjh.bookmark.exception.SuccessException;
 import com.pjh.bookmark.repository.BookmarkRepository;
 import com.pjh.bookmark.repository.HashKeyRepository;
 import com.pjh.bookmark.repository.HashMapRepository;
@@ -37,21 +35,21 @@ public class HashService {
     @Autowired
     private BookmarkRepository bookmarkRepository;
 
-    public HashResponseDto hashKeyListByUserFunc(long userId){
-        return new HashResponseDto(hashKeyRepository.findByUserIdAndState(userId, LIVE_HASHKEY_STATE));
+    public List<HashKey> hashKeyListByUserFunc(long userId){
+        return hashKeyRepository.findByUserIdAndState(userId, LIVE_HASHKEY_STATE);
     }
 
-    public HashResponseDto hashKeyListByBookmarkFunc(long bookmarkId){
+    public List<HashKey> hashKeyListByBookmarkFunc(long bookmarkId){
         List<HashMap> hashMapList = hashMapRepository.findByBookmarkId(bookmarkId);
         List<HashKey> hashKeyList = new ArrayList<>();
         for( HashMap hashMap : hashMapList ) {
             HashKey hashKey = hashKeyRepository.findByHashIdAndState(hashMap.getHashId(), LIVE_HASHKEY_STATE);
             hashKeyList.add(hashKey);
         }
-        return  new HashResponseDto(hashKeyList);
+        return hashKeyList;
     }
 
-    public BookmarkResponseDto bookmarkListByHashKeyFunc(long hashId){
+    public List<Bookmark> bookmarkListByHashKeyFunc(long hashId){
         List<HashMap> hashMapList = hashMapRepository.findByHashId(hashId);
         List<Bookmark> bookmarkList = new ArrayList<>();
         for ( HashMap hashMap : hashMapList) {
@@ -65,10 +63,10 @@ public class HashService {
                 else return -1;
             }
         });
-        return new BookmarkResponseDto(bookmarkList);
+        return bookmarkList;
     }
 
-    public HashResponseDto createHashMapAndBookmarkFunc(HashRequestDto hashRequestDto, long userId){
+    public List<HashKey> createHashMapAndBookmarkFunc(HashRequestDto hashRequestDto, long userId){
         //Bookmark ID 존대 여부 확인
         if(bookmarkRepository.countByBookmarkIdAndState(hashRequestDto.getBookmarkId(), LIVE_BOOKMARK_STATE) ==0 ){
             throw new HashException("Not Found By BookmarkId");
@@ -101,7 +99,7 @@ public class HashService {
         return this.hashKeyListByBookmarkFunc(hashRequestDto.getBookmarkId());
     }
 
-    public HashResponseDto editMappingHashAndBookmark(HashRequestDto hashRequestDto, long userId){
+    public List<HashKey> editMappingHashAndBookmark(HashRequestDto hashRequestDto, long userId){
         if(bookmarkRepository.countByBookmarkIdAndState(hashRequestDto.getBookmarkId(), LIVE_BOOKMARK_STATE) ==0 ){
             throw new HashException("Not Found By BookmarkId");
         }
@@ -137,9 +135,8 @@ public class HashService {
         return this.hashKeyListByBookmarkFunc(hashRequestDto.getBookmarkId());
     }
 
-    public HashResponseDto createHashKeyFunc(HashRequestDto hashRequestDto, long userId) {
+    public List<HashKey> createHashKeyFunc(HashRequestDto hashRequestDto, long userId) {
         List<HashKey> hashKeyList = new ArrayList<>();
-        HashResponseDto hashResponseDto = new HashResponseDto();
         for ( HashKey hashKey : hashRequestDto.getHashKeyList()) {
             if( hashKey.getHashName().equals("")) {
                 throw new HashException("hash key name is empty");
@@ -156,10 +153,10 @@ public class HashService {
                 hashKeyList.add(checkHash);
             }
         }
-        return new HashResponseDto(hashKeyList);
+        return hashKeyList;
     }
 
-    public HashResponseDto updateHashKeyFunc(HashRequestDto hashRequestDto, long userId) {
+    public List<HashKey> updateHashKeyFunc(HashRequestDto hashRequestDto, long userId) {
         List<HashKey> hashKeyList = new ArrayList<>();
         for ( HashKey hashKey : hashRequestDto.getHashKeyList()) {
             HashKey targetHash  = hashKeyRepository.findByHashIdAndUserId(hashKey.getHashId(), userId);
@@ -170,10 +167,10 @@ public class HashService {
                 hashKeyList.add(resultHash);
             }
         }
-        return  new HashResponseDto(hashKeyList);
+        return  hashKeyList;
     }
 
-    public HashResponseDto deleteHashMapFunc(HashRequestDto hashRequestDto) {
+    public List<HashKey> deleteHashMapFunc(HashRequestDto hashRequestDto) {
         List<HashMap> hashMapList = new ArrayList<>();
         for ( HashKey hashKey: hashRequestDto.getHashKeyList()){
             HashMap hashMap = hashMapRepository.findByHashIdAndBookmarkId(hashKey.getHashId(),hashRequestDto.getBookmarkId());
@@ -195,6 +192,7 @@ public class HashService {
         }
         else {
             hashMapRepository.deleteAll(hashMapList);
+            throw new SuccessException("Hash Map Delete is Complete");
         }
     }
 
@@ -214,8 +212,7 @@ public class HashService {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    public HashResponseDto mainHashKeyListFunc(long userId) {
-        HashResponseDto hashResponseDto = new HashResponseDto();
+    public List<HashKey> mainHashKeyListFunc(long userId) {
         List<HashKey> hashKeyList = hashKeyRepository.findByUserIdAndHashMain(userId,MAIN_HASHKEY_NUM);
         hashKeyList.sort(new Comparator<HashKey>() {
             @Override
@@ -223,7 +220,6 @@ public class HashService {
                 return o1.getHashName().compareTo(o2.getHashName());
             }
         });
-        hashResponseDto.setHashKeyList(hashKeyList);
-        return hashResponseDto;
+        return hashKeyList;
     }
 }

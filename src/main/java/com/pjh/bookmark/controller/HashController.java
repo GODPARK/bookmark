@@ -1,12 +1,14 @@
 package com.pjh.bookmark.controller;
 
 import com.pjh.bookmark.dto.HashRequestDto;
-import com.pjh.bookmark.dto.HashResponseDto;
+import com.pjh.bookmark.entity.HashKey;
 import com.pjh.bookmark.service.AuthService;
 import com.pjh.bookmark.service.HashService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/hash")
@@ -19,38 +21,38 @@ public class HashController {
     private AuthService authService;
 
     @GetMapping(path="/bookmark", produces = "application/json")
-    public HashResponseDto getTotalHashKeyListByBookmarkIdApi(@RequestParam("bookmarkId") long bookmarkId){
-        return hashService.hashKeyListByBookmarkFunc(bookmarkId);
+    public ResponseEntity<List<HashKey>> getTotalHashKeyListByBookmarkIdApi(@RequestParam("bookmarkId") long bookmarkId){
+        return ResponseEntity.ok().body(hashService.hashKeyListByBookmarkFunc(bookmarkId));
     }
 
     @GetMapping(path="/user", produces = "application/json")
-    public HashResponseDto getTotalHashKeyListByUserIdApi(@RequestHeader("auth_token") String token){
-        return hashService.hashKeyListByUserFunc(authService.tokenDecode(token));
+    public ResponseEntity<List<HashKey>> getTotalHashKeyListByUserIdApi(@RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(hashService.hashKeyListByUserFunc(authService.tokenDecode(token)));
     }
 
     @GetMapping(path="/main", produces = "application/json")
-    public HashResponseDto getMainHashKeyListByUser(@RequestHeader("auth_token") String token){
-        return hashService.mainHashKeyListFunc(authService.tokenDecode(token));
+    public ResponseEntity<List<HashKey>> getMainHashKeyListByUser(@RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(hashService.mainHashKeyListFunc(authService.tokenDecode(token)));
     }
 
     @PostMapping(path="/map", consumes = "application/json", produces = "application/json")
-    public HashResponseDto postMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
-        return hashService.createHashMapAndBookmarkFunc(hashRequestDto,authService.tokenDecode(token));
+    public ResponseEntity<List<HashKey>> postMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(hashService.createHashMapAndBookmarkFunc(hashRequestDto,authService.tokenDecode(token)));
     }
 
     @PatchMapping(path="/map", consumes = "application/json", produces = "application/json")
-    public HashResponseDto patchMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
-        return hashService.editMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token));
+    public ResponseEntity<List<HashKey>> patchMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(hashService.editMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token)));
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
-    public HashResponseDto postCreateNewHashKeyApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
-        return hashService.createHashKeyFunc(hashRequestDto,authService.tokenDecode(token));
+    public ResponseEntity<List<HashKey>> postCreateNewHashKeyApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(hashService.createHashKeyFunc(hashRequestDto,authService.tokenDecode(token)));
     }
 
     @PatchMapping(path="", consumes = "application/json", produces = "application/json")
-    public HashResponseDto patchHashKeyApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
-        return hashService.updateHashKeyFunc(hashRequestDto,authService.tokenDecode(token));
+    public ResponseEntity<List<HashKey>> patchHashKeyApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(hashService.updateHashKeyFunc(hashRequestDto,authService.tokenDecode(token)));
     }
 
     @DeleteMapping(path="", consumes = "application/json", produces = "application/json")

@@ -1,8 +1,13 @@
 package com.pjh.bookmark.service;
 
 import com.pjh.bookmark.dto.*;
+import com.pjh.bookmark.entity.Bookmark;
+import com.pjh.bookmark.entity.HashKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CombinationService {
@@ -17,13 +22,14 @@ public class CombinationService {
 
         BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto();
         bookmarkRequestDto.setBookmark(combinationRequestDto.getBookmark());
-        BookmarkResponseDto bookmarkResponseDto = bookmarkService.createBookmarkFunc(bookmarkRequestDto, userId);
+        List<Bookmark> bookmarkList = new ArrayList<>();
+        bookmarkList.add(bookmarkService.createBookmarkFunc(bookmarkRequestDto, userId));
 
         HashRequestDto hashRequestDto = new HashRequestDto();
         hashRequestDto.setHashKeyList(combinationRequestDto.getHashKeyList());
-        hashRequestDto.setBookmarkId(bookmarkResponseDto.getBookmarkList().get(0).getBookmarkId());
-        HashResponseDto hashResponseDto = hashService.createHashMapAndBookmarkFunc(hashRequestDto,userId);
+        hashRequestDto.setBookmarkId(bookmarkList.get(0).getBookmarkId());
+        List<HashKey> hashKeyList = hashService.createHashMapAndBookmarkFunc(hashRequestDto,userId);
 
-        return new CombinationResponseDto(bookmarkResponseDto.getBookmarkList(), hashResponseDto.getHashKeyList());
+        return new CombinationResponseDto(bookmarkList, hashKeyList);
     }
 }
