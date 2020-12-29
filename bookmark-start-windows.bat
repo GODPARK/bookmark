@@ -1,0 +1,1 @@
+start /B javaw -jar C:\Users\hyun9\Desktop\PJH\Bookmark\build\libs\bookmark-0.0.1-SNAPSHOT.jar -Xmx 256m
