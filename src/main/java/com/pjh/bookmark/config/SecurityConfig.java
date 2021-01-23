@@ -46,14 +46,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and()
                 .authorizeRequests()
                 .antMatchers("/api/**").permitAll()
-                .antMatchers("/").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
                 .anyRequest().authenticated();
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:8080","http://www.godpark.pe.kr","http://localhost", "http://coin.godpark.pe.kr"));
+        corsConfiguration.setAllowedOrigins(Arrays.asList(
+                "http://localhost",
+                "http://localhost:8080",
+                "http://192.168.0.2",
+                "http://192.168.0.2:8080",
+                "http://192.168.0.4",
+                "http://192.168.0.4:8080",
+                "http://bookmark.godpark.pe.kr",
+                "http://bookmark-api.godpark.pe.kr"
+        ));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST","DELETE","PUT","OPTIONS","PATCH"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("auth_token","Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

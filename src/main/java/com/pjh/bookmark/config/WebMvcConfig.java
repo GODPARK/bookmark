@@ -16,8 +16,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry interceptorRegistry){
         interceptorRegistry.addInterceptor(new AuthInterceptor(authService))
-                .addPathPatterns("/bmk/api/**")
-                .excludePathPatterns("/bmk/auth/**", "/","/swagger-ui.html");
+                .addPathPatterns("/api/v1/bookmark/**")
+                .addPathPatterns("/api/v1/hash/**")
+                .addPathPatterns("/api/v1/search/**")
+                .addPathPatterns("/api/v1/admin/**")
+                .excludePathPatterns("/api/v1/auth/**","/swagger-ui.html");
     }
 
 }
