@@ -16,7 +16,7 @@ import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bmk/api/bookmark")
+@RequestMapping("/api/v1/bookmark")
 public class BookmarkController {
 
     @Autowired

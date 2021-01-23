@@ -45,8 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                .antMatchers("/bmk/api/**").permitAll()
-                .antMatchers("/bmk/auth/**").permitAll()
+                .antMatchers("/api/**").permitAll()
                 .antMatchers("/").permitAll()
                 .anyRequest().authenticated();
     }
@@ -54,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:8080","http://www.godpark.pe.kr","http://localhost"));
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:8080","http://www.godpark.pe.kr","http://localhost", "http://coin.godpark.pe.kr"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST","DELETE","PUT","OPTIONS","PATCH"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("auth_token","Content-Type"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

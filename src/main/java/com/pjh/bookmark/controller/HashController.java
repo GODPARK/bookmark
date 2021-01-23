@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bmk/api/hash")
+@RequestMapping("/api/v1/hash")
 public class HashController {
 
     @Autowired

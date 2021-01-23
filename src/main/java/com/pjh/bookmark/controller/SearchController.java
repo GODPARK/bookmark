@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/bmk/api/search")
+@RequestMapping("/api/v1/search")
 public class SearchController {
 
     @Autowired
