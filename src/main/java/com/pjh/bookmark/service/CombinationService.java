@@ -28,7 +28,7 @@ public class CombinationService {
         HashRequestDto hashRequestDto = new HashRequestDto();
         hashRequestDto.setHashKeyList(combinationRequestDto.getHashKeyList());
         hashRequestDto.setBookmarkId(bookmarkList.get(0).getBookmarkId());
-        List<HashKey> hashKeyList = hashService.createHashMapAndBookmarkFunc(hashRequestDto,userId);
+        List<HashKey> hashKeyList = hashService.createHashMapAndBookmarkFunc(hashRequestDto, userId);
 
         return new CombinationResponseDto(bookmarkList, hashKeyList);
     }

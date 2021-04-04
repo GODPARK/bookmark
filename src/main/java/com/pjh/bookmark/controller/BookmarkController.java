@@ -66,9 +66,9 @@ public class BookmarkController {
         return ResponseEntity.ok().body(bookmarkService.updateBookmarkFunc(bookmarkRequestDto, authService.tokenDecode(token)));
     }
 
-    @DeleteMapping(path="", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Bookmark> deleteBookmarkApi(@RequestBody BookmarkRequestDto bookmarkRequestDto, @RequestHeader("auth_token") String token){
-        return ResponseEntity.ok().body(bookmarkService.deleteBookmarkFunc(bookmarkRequestDto, authService.tokenDecode(token)));
+    @DeleteMapping(path="/{bookmarkId}", produces = "application/json")
+    public ResponseEntity<Bookmark> deleteBookmarkApi(@PathVariable("bookmarkId") long bookmarkId, @RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(bookmarkService.deleteBookmarkFunc(bookmarkId, authService.tokenDecode(token)));
     }
 
 }

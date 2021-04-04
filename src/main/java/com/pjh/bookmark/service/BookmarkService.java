@@ -62,9 +62,8 @@ public class BookmarkService {
         return bookmarkRepository.save(updateBookmark);
     }
 
-    public Bookmark deleteBookmarkFunc(BookmarkRequestDto bookmarkRequestDto, long userId){
-        Bookmark deleteBookmark = bookmarkRequestDto.getBookmark();
-        bookmarkRepository.findByBookmarkIdAndUserId(deleteBookmark.getBookmarkId(), userId);
+    public Bookmark deleteBookmarkFunc(long bookmarkId, long userId){
+        Bookmark deleteBookmark = bookmarkRepository.findByBookmarkIdAndUserId(bookmarkId, userId);
         hashService.deleteHashMapByBookmarkFunc(deleteBookmark.getBookmarkId());
         deleteBookmark.setState(DEAD_BOOKMARK_STATE);
         deleteBookmark.setUserId(userId);
