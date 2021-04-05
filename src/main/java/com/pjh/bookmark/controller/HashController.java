@@ -20,8 +20,8 @@ public class HashController {
     @Autowired
     private AuthService authService;
 
-    @GetMapping(path="/bookmark", produces = "application/json")
-    public ResponseEntity<List<HashKey>> getTotalHashKeyListByBookmarkIdApi(@RequestParam("bookmarkId") long bookmarkId){
+    @GetMapping(path="/bookmark/{bookmarkId}", produces = "application/json")
+    public ResponseEntity<List<HashKey>> getTotalHashKeyListByBookmarkIdApi(@PathVariable("bookmarkId") long bookmarkId){
         return ResponseEntity.ok().body(hashService.hashKeyListByBookmarkFunc(bookmarkId));
     }
 
