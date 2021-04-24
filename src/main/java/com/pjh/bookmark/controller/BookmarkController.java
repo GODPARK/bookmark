@@ -40,8 +40,8 @@ public class BookmarkController {
         return ResponseEntity.ok().body(bookmarkService.mainBookmarkListFunc(authService.tokenDecode(token)));
     }
 
-    @GetMapping(path="/hash", consumes = "*/*", produces = "application/json")
-    public ResponseEntity<List<Bookmark>> getBookmarkListByHashIdApi(@PathParam(value="hashId") long hashId){
+    @GetMapping(path="/hash/{hashId}", consumes = "*/*", produces = "application/json")
+    public ResponseEntity<List<Bookmark>> getBookmarkListByHashIdApi(@PathVariable("hashId") long hashId){
         return ResponseEntity.ok().body(hashService.bookmarkListByHashKeyFunc(hashId));
     }
 
@@ -50,14 +50,14 @@ public class BookmarkController {
         return ResponseEntity.ok().body(bookmarkService.bookmarkListNotHashMapFunc(authService.tokenDecode(token)));
     }
 
-    @GetMapping(path = "/freq", consumes = "*/*", produces = "*/*")
-    public void addFrequencyByBookmarkIdApi(@PathParam(value = "bookmarkId") long bookmarkId, @RequestHeader("auth_token") String token){
+    @GetMapping(path = "/{bookmarkId}/freq", consumes = "*/*", produces = "*/*")
+    public void addFrequencyByBookmarkIdApi(@PathVariable("bookmarkId") long bookmarkId, @RequestHeader("auth_token") String token){
         bookmarkService.addBookmarkFrequencyFunc(bookmarkId, authService.tokenDecode(token));
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
     public CombinationResponseDto postCreateNewBookmarkApi(@RequestBody CombinationRequestDto combinationRequestDto, @RequestHeader("auth_token") String token){
-        return combinationService.bookmarkAndHashSave(combinationRequestDto,authService.tokenDecode(token));
+        return combinationService.bookmarkAndHashSave(combinationRequestDto, authService.tokenDecode(token));
     }
 
     @PatchMapping(path="", consumes = "application/json", produces = "application/json")
