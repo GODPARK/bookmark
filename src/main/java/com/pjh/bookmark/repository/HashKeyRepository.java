@@ -9,8 +9,7 @@ import java.util.List;
 @Repository
 public interface HashKeyRepository extends JpaRepository<HashKey, Long> {
     HashKey findByHashNameAndUserIdAndState(String hashName, long userId, int state);
-    HashKey findByHashIdAndState(long hashId, int state);
-    HashKey findByHashIdAndUserId(long hashId, long userId);
+    HashKey findByHashIdAndUserIdAndState(long hashId, long userId, int state);
     List<HashKey> findByUserIdAndState(long userId, int state);
-    List<HashKey> findByUserIdAndHashMain(long userId, int hashMain);
+    List<HashKey> findByUserIdAndHashMainAndState(long userId, int hashMain, int state);
 }

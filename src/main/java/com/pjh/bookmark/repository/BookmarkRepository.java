@@ -12,8 +12,8 @@ import java.util.List;
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findByUserIdAndState(long userId, int state);
     List<Bookmark> findByUserIdAndIsMainAndState(long userId, int isMain, int state);
-    Long countByBookmarkIdAndState(long bookmarkId, int state);
-    Bookmark findByBookmarkIdAndUserId(long bookmarkId, long userId );
+    Long countByBookmarkIdAndUserIdAndState(long bookmarkId, long userId, int state);
+    Bookmark findByBookmarkIdAndUserIdAndState(long bookmarkId, long userId, int state);
     Bookmark findByBookmarkId(long bookmarkId );
 
     @Query("SELECT b.bookmarkId FROM Bookmark b where b.userId = :userId and b.state = :state")

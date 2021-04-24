@@ -1,6 +1,5 @@
 package com.pjh.bookmark.controller;
 
-import com.pjh.bookmark.dto.BookmarkRequestDto;
 import com.pjh.bookmark.dto.CombinationRequestDto;
 import com.pjh.bookmark.dto.CombinationResponseDto;
 import com.pjh.bookmark.entity.Bookmark;
@@ -62,8 +61,8 @@ public class BookmarkController {
     }
 
     @PatchMapping(path="", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Bookmark> patchBookmarkApi(@RequestBody BookmarkRequestDto bookmarkRequestDto, @RequestHeader("auth_token") String token){
-        return ResponseEntity.ok().body(bookmarkService.updateBookmarkFunc(bookmarkRequestDto, authService.tokenDecode(token)));
+    public ResponseEntity<Bookmark> patchBookmarkApi(@RequestBody Bookmark bookmark, @RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(bookmarkService.updateBookmarkFunc(bookmark, authService.tokenDecode(token)));
     }
 
     @DeleteMapping(path="/{bookmarkId}", produces = "application/json")

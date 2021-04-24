@@ -20,10 +20,8 @@ public class CombinationService {
 
     public CombinationResponseDto bookmarkAndHashSave(CombinationRequestDto combinationRequestDto, long userId) {
 
-        BookmarkRequestDto bookmarkRequestDto = new BookmarkRequestDto();
-        bookmarkRequestDto.setBookmark(combinationRequestDto.getBookmark());
         List<Bookmark> bookmarkList = new ArrayList<>();
-        bookmarkList.add(bookmarkService.createBookmarkFunc(bookmarkRequestDto, userId));
+        bookmarkList.add(bookmarkService.createBookmarkFunc(combinationRequestDto.getBookmark(), userId));
 
         HashRequestDto hashRequestDto = new HashRequestDto();
         hashRequestDto.setHashKeyList(combinationRequestDto.getHashKeyList());

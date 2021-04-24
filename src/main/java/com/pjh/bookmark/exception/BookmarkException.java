@@ -6,14 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class HashException extends RuntimeException{
+public class BookmarkException extends RuntimeException {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
-    public HashException(String message) {
+    public BookmarkException(String message) {
         super(message);
         logger.error(message);
     }
-
-    public HashException(){
-        super("Hash Exception");
+    public BookmarkException() {
+        super("Bookmark Exception");
     }
 }

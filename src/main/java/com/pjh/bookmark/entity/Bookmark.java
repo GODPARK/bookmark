@@ -93,4 +93,25 @@ public class Bookmark {
     public void setFrequency(long frequency) {
         this.frequency = frequency;
     }
+
+    public void setBookmarkIcon(String bookmarkIcon) {
+        this.bookmarkIcon = bookmarkIcon;
+    }
+
+    public void setBookmarkInfo(String bookmarkInfo) {
+        this.bookmarkInfo = bookmarkInfo;
+    }
+
+    public void setBookmarkName(String bookmarkName) {
+        this.bookmarkName = bookmarkName;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return "\nbookmarkId: " + this.bookmarkId + "\nbookmarkName: " + this.bookmarkName + "\nUrl: " + this.url + "\nbookmarkInfo: " + this.bookmarkInfo;
+    }
 }
