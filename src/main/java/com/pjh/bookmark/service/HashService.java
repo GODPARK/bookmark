@@ -40,7 +40,6 @@ public class HashService {
     @Autowired
     private BookmarkRepository bookmarkRepository;
 
-    @Cacheable(value = "hash")
     public List<HashKey> hashKeyListByUserFunc(long userId) {
         return hashKeyRepository.findByUserIdAndState(userId, LIVE_HASHKEY_STATE);
     }
@@ -140,7 +139,7 @@ public class HashService {
         return this.hashKeyListByBookmarkFunc(hashRequestDto.getBookmarkId(), userId);
     }
 
-    @CacheEvict(value = "hash", allEntries = true)
+    @CacheEvict(value = "main_hash", allEntries = true)
     public HashKey createHashKeyFunc(HashKey hashKey, long userId) {
         if (hashKey.getHashName().equals("")) {
             throw new HashException("hash key name is empty");
@@ -157,7 +156,7 @@ public class HashService {
         }
     }
 
-    @CacheEvict(value = "hash", allEntries = true)
+    @CacheEvict(value = "main_hash", allEntries = true)
     public HashKey updateHashKeyFunc(HashKey hashKey, long userId) {
         HashKey targetHash = hashKeyRepository.findByHashIdAndUserIdAndState(hashKey.getHashId(), userId, LIVE_HASHKEY_STATE);
         if (targetHash == null) throw new HashException("hash is not found");
@@ -187,7 +186,7 @@ public class HashService {
         }
     }
 
-    @CacheEvict(value = "hash", allEntries = true)
+    @CacheEvict(value = "main_hash", allEntries = true)
     public HashKey deleteHashMapAndHashKeyFunc(long hashId, long userId) {
         HashKey deleteHashKey = hashKeyRepository.findByHashIdAndUserIdAndState(hashId, userId, LIVE_HASHKEY_STATE);
         if (deleteHashKey == null) throw new HashException("hash key is not found");
@@ -199,7 +198,7 @@ public class HashService {
         return hashKeyRepository.save(deleteHashKey);
     }
 
-    @Cacheable(value = "hash")
+    @Cacheable(value = "main_hash")
     public List<HashKey> mainHashKeyListFunc(long userId) {
         logger.info("refresh main hash");
         List<HashKey> hashKeyList = hashKeyRepository.findByUserIdAndHashMainAndState(userId, MAIN_HASHKEY_NUM, LIVE_HASHKEY_STATE);

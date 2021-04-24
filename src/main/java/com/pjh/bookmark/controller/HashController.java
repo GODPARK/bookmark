@@ -37,7 +37,7 @@ public class HashController {
 
     @PostMapping(path="/map", consumes = "application/json", produces = "application/json")
     public ResponseEntity<List<HashKey>> postMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
-        return ResponseEntity.ok().body(hashService.createHashMapAndBookmarkFunc(hashRequestDto,authService.tokenDecode(token)));
+        return ResponseEntity.ok().body(hashService.createHashMapAndBookmarkFunc(hashRequestDto, authService.tokenDecode(token)));
     }
 
     @PatchMapping(path="/map", consumes = "application/json", produces = "application/json")
