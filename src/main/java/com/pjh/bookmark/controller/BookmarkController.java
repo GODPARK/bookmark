@@ -40,6 +40,11 @@ public class BookmarkController {
         return ResponseEntity.ok().body(bookmarkService.mainBookmarkListFunc(authService.tokenDecode(token)));
     }
 
+    @GetMapping(path="/search", consumes = "*/*", produces = "application/json")
+    public ResponseEntity<List<Bookmark>> getSearchBookmarkListApi(@RequestParam("bookmark") String bookmarkName, @RequestHeader("auth_token") String token) {
+        return ResponseEntity.ok().body(bookmarkService.searchBookmarkListByName(bookmarkName, authService.tokenDecode(token)));
+    }
+
     @GetMapping(path="/hash/{hashId}", consumes = "*/*", produces = "application/json")
     public ResponseEntity<List<Bookmark>> getBookmarkListByHashIdApi(@PathVariable("hashId") long hashId){
         return ResponseEntity.ok().body(hashService.bookmarkListByHashKeyFunc(hashId));

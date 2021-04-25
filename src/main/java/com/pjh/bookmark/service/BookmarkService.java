@@ -31,44 +31,46 @@ public class BookmarkService {
     @Autowired
     private HashService hashService;
 
-    public List<Bookmark> totalBookmarkListFunc(long userId){
+    public List<Bookmark> totalBookmarkListFunc(long userId) {
         return bookmarkRepository.findByUserIdAndState(userId, LIVE_BOOKMARK_STATE);
     }
 
-    public List<Bookmark> mainBookmarkListFunc(long userId){
-        return bookmarkRepository.findByUserIdAndIsMainAndState(userId,MAIN_BOOKMARK_NUM, LIVE_BOOKMARK_STATE);
+    public List<Bookmark> mainBookmarkListFunc(long userId) {
+        return bookmarkRepository.findByUserIdAndIsMainAndState(userId, MAIN_BOOKMARK_NUM, LIVE_BOOKMARK_STATE);
     }
 
-    public void addBookmarkFrequencyFunc(long bookmarkId, long userId){
+    public void addBookmarkFrequencyFunc(long bookmarkId, long userId) {
         Bookmark bookmark = bookmarkRepository.findByBookmarkIdAndUserIdAndState(bookmarkId, userId, LIVE_BOOKMARK_STATE);
-        if( bookmark != null){
+        if (bookmark != null) {
             bookmark.setFrequency(bookmark.getFrequency() + 1);
             bookmarkRepository.save(bookmark);
             throw new SuccessException("freq add success");
-        }
-        else {
+        } else {
             throw new BookmarkException("freq add fail");
         }
     }
 
-    public Bookmark createBookmarkFunc(Bookmark bookmark, long userId){
+    public Bookmark createBookmarkFunc(Bookmark bookmark, long userId) {
         Bookmark saveBookmark = bookmark;
         saveBookmark.setUserId(userId);
         saveBookmark.setFrequency(0);
         return bookmarkRepository.save(saveBookmark);
     }
 
-    public Bookmark updateBookmarkFunc(Bookmark bookmark, long userId){
+    public Bookmark updateBookmarkFunc(Bookmark bookmark, long userId) {
         Bookmark updateBookmark = bookmarkRepository.findByBookmarkIdAndUserIdAndState(bookmark.getBookmarkId(), userId, LIVE_BOOKMARK_STATE);
         if (updateBookmark == null) throw new BookmarkException("update bookmark not found");
-        if (bookmark.getBookmarkIcon() != null && !bookmark.getBookmarkIcon().equals("")) updateBookmark.setBookmarkIcon(bookmark.getBookmarkIcon());
-        if (bookmark.getBookmarkInfo() != null && !bookmark.getBookmarkInfo().equals("")) updateBookmark.setBookmarkInfo(bookmark.getBookmarkInfo());
-        if (bookmark.getBookmarkName() != null && !bookmark.getBookmarkName().equals("")) updateBookmark.setBookmarkName(bookmark.getBookmarkName());
+        if (bookmark.getBookmarkIcon() != null && !bookmark.getBookmarkIcon().equals(""))
+            updateBookmark.setBookmarkIcon(bookmark.getBookmarkIcon());
+        if (bookmark.getBookmarkInfo() != null && !bookmark.getBookmarkInfo().equals(""))
+            updateBookmark.setBookmarkInfo(bookmark.getBookmarkInfo());
+        if (bookmark.getBookmarkName() != null && !bookmark.getBookmarkName().equals(""))
+            updateBookmark.setBookmarkName(bookmark.getBookmarkName());
         if (bookmark.getUrl() != null && !bookmark.getUrl().equals("")) updateBookmark.setUrl(bookmark.getUrl());
         return bookmarkRepository.save(updateBookmark);
     }
 
-    public Bookmark deleteBookmarkFunc(long bookmarkId, long userId){
+    public Bookmark deleteBookmarkFunc(long bookmarkId, long userId) {
         Bookmark deleteBookmark = bookmarkRepository.findByBookmarkIdAndUserIdAndState(bookmarkId, userId, LIVE_BOOKMARK_STATE);
         if (deleteBookmark == null) throw new BookmarkException("delete bookmark not found");
         hashService.deleteHashMapByBookmarkFunc(deleteBookmark.getBookmarkId());
@@ -82,12 +84,20 @@ public class BookmarkService {
         bookmarkIdListInBookmark.removeAll(bookmarkIdListInHashMap);
 
         List<Bookmark> bookmarkList = new ArrayList<>();
-        for (Long bookmarkId : bookmarkIdListInBookmark ) {
+        for (Long bookmarkId : bookmarkIdListInBookmark) {
             Bookmark bookmark = bookmarkRepository.findByBookmarkIdAndUserIdAndState(bookmarkId, userId, LIVE_BOOKMARK_STATE);
-            if ( bookmark != null ) {
+            if (bookmark != null) {
                 bookmarkList.add(bookmark);
             }
         }
         return bookmarkList;
+    }
+
+    public List<Bookmark> searchBookmarkListByName(String bookmarkName, long userId) {
+        if (bookmarkName != null && !bookmarkName.equals("")) {
+            return bookmarkRepository.findByBookmarkNameContainsAndUserIdAndState(bookmarkName, userId, LIVE_BOOKMARK_STATE);
+        } else {
+            return bookmarkRepository.findByUserIdAndState(userId, LIVE_BOOKMARK_STATE);
+        }
     }
 }
