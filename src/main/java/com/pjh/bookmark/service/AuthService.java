@@ -10,6 +10,8 @@ import com.pjh.bookmark.exception.UnAuthException;
 import com.pjh.bookmark.exception.UnExpectedException;
 import com.pjh.bookmark.repository.TokenRepository;
 import com.pjh.bookmark.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,8 @@ public class AuthService {
 
     private static final int LIVE_TOKEN_STATE = 1;
     private static final int EXPIRE_TOKEN_STATE = 0;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @Autowired
     private UserRepository userRepository;
@@ -89,9 +93,12 @@ public class AuthService {
     }
 
     public AuthResponseDto login(AuthRequestDto authRequestDto) throws UnAuthException {
+        if (authRequestDto.getAccount() == null || authRequestDto.getAccount().equals("")) throw new UnAuthException("account is empty");
+        if (authRequestDto.getPassword() == null || authRequestDto.getPassword().equals("")) throw new UnAuthException("password id empty");
+        logger.info("login try Account:" + authRequestDto.getAccount());
         User user = userRepository.findByUserAccountAndState(authRequestDto.getAccount(),1);
         if(user == null){
-            throw new UnAuthException("Account is Not found");
+            throw new UnAuthException("user is not found");
         }
         else{
             if(passwordEncoding.matches(authRequestDto.getPassword(),user.getUserPassword())){
@@ -115,6 +122,7 @@ public class AuthService {
                     tokenRepository.save(token);
                 }
                 authResponseDto.setAccount(user.getUserAccount());
+                logger.info("login success Account:" + authRequestDto.getAccount());
                 return authResponseDto;
             }
             else{

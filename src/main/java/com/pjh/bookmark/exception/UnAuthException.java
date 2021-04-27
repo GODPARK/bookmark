@@ -13,6 +13,11 @@ public class UnAuthException extends RuntimeException{
         logger.error(message);
     }
 
+    public UnAuthException(String message, String path, String remoteUser) {
+        super(message);
+        logger.error("path: " + path + ", remote user : " + remoteUser + " msg: " + message);
+    }
+
     public UnAuthException(){
         super("Auth Fail");
         logger.error("Auth fail");
