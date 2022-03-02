@@ -31,17 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Value("${cors.allow.env}")
-    private String corsEnv;
-
-    @Value("#{'${cors.allow.domain.dev.list}'.split(',')}")
-    private ArrayList<String> corsDevList;
-
-    @Value("#{'${cors.allow.domain.company.list}'.split(',')}")
-    private ArrayList<String> corsCompanyList;
-
-    @Value("#{'${cors.allow.domain.prod.list}'.split(',')}")
-    private ArrayList<String> corsProdList;
+    @Value("#{'${cors.allow.domain.list}'.split(',')}")
+    private ArrayList<String> corsDomainList;
 
     @Override
     public void configure(WebSecurity webSecurity){
@@ -73,24 +64,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         ArrayList<String> corsAllowList = new ArrayList<>();
-        logger.info(this.corsEnv);
-        if (this.corsEnv.equals("dev")) {
-            corsAllowList.addAll(this.corsDevList);
-        }
-        else if (this.corsEnv.equals("company")) {
-            corsAllowList.addAll(this.corsCompanyList);
-        }
-        else if (this.corsEnv.equals("prod")) {
-            corsAllowList.addAll(this.corsProdList);
-        }
-        else if (this.corsEnv.equals("all")) {
-            corsAllowList.addAll(this.corsDevList);
-            corsAllowList.addAll(this.corsCompanyList);
-            corsAllowList.addAll(this.corsProdList);
-        }
-        else {
-            corsAllowList.add("http://localhost");
-        }
+        corsAllowList.addAll(this.corsDomainList);
+
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(corsAllowList);
         corsConfiguration.setAllowedMethods(Arrays.asList("GET","POST","DELETE","PUT","OPTIONS","PATCH"));
