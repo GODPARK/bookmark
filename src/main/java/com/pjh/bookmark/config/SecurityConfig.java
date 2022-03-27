@@ -65,6 +65,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         ArrayList<String> corsAllowList = new ArrayList<>();
         corsAllowList.addAll(this.corsDomainList);
+        if (this.corsDomainList.size() > 0) {
+            this.logger.info(this.corsDomainList.toString());
+        }
 
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(corsAllowList);

@@ -1,10 +1,13 @@
 package com.pjh.bookmark.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name="token")
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor @Builder @ToString
 public class Token {
     @Id
     @Column(name="user_id", nullable = false)
@@ -22,40 +25,4 @@ public class Token {
     @OneToOne
     @JoinColumn(name="user_id")
     private User user;
-
-    public String getToken() {
-        return token;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public long getTokenExpire() {
-        return tokenExpire;
-    }
-
-    public Date getTokenTimestamp() {
-        return tokenTimestamp;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public void setTokenExpire(long tokenExpire) {
-        this.tokenExpire = tokenExpire;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public void setTokenTimestamp(Date tokenTimestamp) {
-        this.tokenTimestamp = tokenTimestamp;
-    }
-
-    public User getUser() {
-        return user;
-    }
 }

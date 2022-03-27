@@ -1,8 +1,13 @@
 package com.pjh.bookmark.service;
 
+import com.pjh.bookmark.common.ConstantCode;
+import com.pjh.bookmark.common.ErrorCode;
+import com.pjh.bookmark.component.PasswordEncoding;
+import com.pjh.bookmark.dto.ResponseDto;
 import com.pjh.bookmark.dto.UserRequestDto;
 import com.pjh.bookmark.entity.Token;
 import com.pjh.bookmark.entity.User;
+import com.pjh.bookmark.exception.CustomException;
 import com.pjh.bookmark.repository.TokenRepository;
 import com.pjh.bookmark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 
 @Service
 public class UserService {
-
-    private static final int LIVE_USER_STATE = 1;
-    private static final int DEFAULT_USER_ROLE_NUM =1;
-    private static final int LIVE_TOKEN_STATE = 1;
-    private static final int EXPIRE_TOKEN_STATE = 0;
 
     @Autowired
     private UserRepository userRepository;
@@ -27,52 +28,38 @@ public class UserService {
     @Autowired
     private TokenRepository tokenRepository;
 
-    private boolean signUpValidationCheck(UserRequestDto userRequestDto){
-        if(userRequestDto.getAccount() == null){
-            return false;
+    @Autowired
+    private PasswordEncoding passwordEncoding;
+
+    public String signUp(UserRequestDto userRequestDto) {
+
+        if (userRepository.countByUserAccount(userRequestDto.getAccount()) != 0) {
+            throw new CustomException(ErrorCode.USER_ACCOUNT_IS_OVERLAP);
+        }
+        if (!userRequestDto.getF_password().equals(userRequestDto.getS_password())) {
+            throw new CustomException(ErrorCode.USER_PASSWORD_NOT_MATCH_WITH_SECOND);
         }
 
-        if(userRepository.countByUserAccount(userRequestDto.getAccount())!= 0) {
-            return false;
-        }
+        User saveUser = userRepository.save(
+                User.builder()
+                        .userAccount(userRequestDto.getAccount())
+                        .userName(userRequestDto.getName())
+                        .userAgree(userRequestDto.getAgree())
+                        .userPassword(passwordEncoding.encode(userRequestDto.getF_password()))
+                        .userRole(ConstantCode.DEFAULT_USER_ROLE.getState())
+                        .state(ConstantCode.ACTIVE_USER_STATE.getState())
+                        .userCreate(new Date())
+                        .build()
+        );
 
-        if(!userRequestDto.getF_password().equals(userRequestDto.getS_password())){
-            return false;
-        }
-
-        if(userRequestDto.getName() == null){
-            return false;
-        }
-        return true;
-    }
-
-    public ResponseEntity signUp(UserRequestDto userRequestDto){
-        if(this.signUpValidationCheck(userRequestDto)){
-            User user = new User();
-            user.setUserAccount(userRequestDto.getAccount());
-            user.setUserName(userRequestDto.getName());
-
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            user.setUserPassword(passwordEncoder.encode(userRequestDto.getF_password()));
-            user.setState(LIVE_USER_STATE);
-            user.setUserCreate(new Date());
-            user.setUserRole(DEFAULT_USER_ROLE_NUM);
-            user.setUserAgree(userRequestDto.getAgree());
-
-            User saveUser = userRepository.save(user);
-
-            Token token = new Token();
-            token.setUserId(saveUser.getUserId());
-            token.setToken("");
-            token.setTokenExpire(EXPIRE_TOKEN_STATE);
-            token.setTokenTimestamp(new Date());
-
-            tokenRepository.save(token);
-
-            return new ResponseEntity(HttpStatus.ACCEPTED);
-        }
-        else{
-            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
-        }
+        tokenRepository.save(
+                Token.builder()
+                .userId(saveUser.getUserId())
+                .token("")
+                .tokenExpire(ConstantCode.DEACTIVE_TOKEN_STATE.getState())
+                .tokenTimestamp(new Date())
+                .build()
+        );
+        return "OK";
     }
 }
