@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Long> {
-    User findByUserIdAndState(long userId, int state );
-    User findByUserAccountAndState(String userAccount, int state);
+    Optional<User> findByUserIdAndState(long userId, int state );
+    Optional<User> findByUserAccountAndState(String userAccount, int state);
     int countByUserAccount(String userAccount);
 }

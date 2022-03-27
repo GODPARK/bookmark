@@ -1,11 +1,14 @@
 package com.pjh.bookmark.service;
 
+import com.pjh.bookmark.common.ErrorCode;
+import com.pjh.bookmark.common.StatusCode;
 import com.pjh.bookmark.component.PasswordEncoding;
 import com.pjh.bookmark.component.TokenEncoding;
 import com.pjh.bookmark.dto.AuthRequestDto;
 import com.pjh.bookmark.dto.AuthResponseDto;
 import com.pjh.bookmark.entity.Token;
 import com.pjh.bookmark.entity.User;
+import com.pjh.bookmark.exception.CustomException;
 import com.pjh.bookmark.exception.UnAuthException;
 import com.pjh.bookmark.exception.UnExpectedException;
 import com.pjh.bookmark.repository.TokenRepository;
@@ -29,13 +32,13 @@ public class AuthService {
     @Value("${auth.expire.hour.limit}")
     private long expireHourLimit;
 
-    private static final int LIVE_TOKEN_STATE = 1;
-    private static final int EXPIRE_TOKEN_STATE = 0;
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     private TokenRepository tokenRepository;
@@ -43,17 +46,16 @@ public class AuthService {
     @Autowired
     private PasswordEncoding passwordEncoding;
 
-    public boolean accountValidator(String token){
-        if(token != null){
-            Token originToken = tokenRepository.findByUserId(this.tokenDecode(token));
+    public boolean accountValidator(String token) {
+        if (token != null) {
+            Token originToken = tokenService.findTokenByUserId(this.tokenDecode(token));
 
-            if(originToken.getUser() == null) return false;
-            if(originToken.getUser().getUserRole() < 10 ) return false;
-            if(!originToken.getToken().equals(token)) return false;
+            if (originToken.getUser().getUserRole() < 10) return false;
+            if (!originToken.getToken().equals(token)) return false;
 
             //만료 시간 체크
-            if(this.isTokenExpired(originToken)){
-                originToken.setTokenExpire(EXPIRE_TOKEN_STATE);
+            if (this.isTokenExpired(originToken)) {
+                originToken.setTokenExpire(StatusCode.DEACTIVE_TOKEN_STATE.getState());
                 tokenRepository.save(originToken);
                 return false;
             }
@@ -64,19 +66,19 @@ public class AuthService {
 
     private boolean isTokenExpired(Token checkToken) {
         Date now = new Date();
-        long diff = (now.getTime() - checkToken.getTokenTimestamp().getTime()) / (1000*60*60);
+        long diff = (now.getTime() - checkToken.getTokenTimestamp().getTime()) / (1000 * 60 * 60);
         return (diff > this.expireHourLimit || checkToken.getTokenExpire() == 0);
     }
 
     private String tokenEncode(long userId) {
-        TokenEncoding tokenEncoding =  new TokenEncoding();
-        String rawToken = Integer.valueOf((int)(Math.random() * 1000000)) +
+        TokenEncoding tokenEncoding = new TokenEncoding();
+        String rawToken = Integer.valueOf((int) (Math.random() * 1000000)) +
                 "/" + Long.valueOf(userId) +
-                "/bookmark" + Integer.valueOf((int)(Math.random() * 10000));
+                "/bookmark" + Integer.valueOf((int) (Math.random() * 10000));
         return tokenEncoding.encrypt(rawToken);
     }
 
-    public int tokenDecode(String token){
+    public long tokenDecode(String token) {
         try {
             TokenEncoding tokenEncoding = new TokenEncoding();
             String rawToken = tokenEncoding.decrypt(token);
@@ -86,66 +88,55 @@ public class AuthService {
             }
             int userId = Integer.valueOf(decodedToken[1]);
             return userId;
-        }
-        catch(IllegalArgumentException iae) {
+        } catch (IllegalArgumentException iae) {
             throw new UnAuthException();
         }
     }
 
-    public AuthResponseDto login(AuthRequestDto authRequestDto) throws UnAuthException {
-        if (authRequestDto.getAccount() == null || authRequestDto.getAccount().equals("")) throw new UnAuthException("account is empty");
-        if (authRequestDto.getPassword() == null || authRequestDto.getPassword().equals("")) throw new UnAuthException("password id empty");
+    public AuthResponseDto login(AuthRequestDto authRequestDto) {
         logger.info("login try Account:" + authRequestDto.getAccount());
-        User user = userRepository.findByUserAccountAndState(authRequestDto.getAccount(),1);
-        if(user == null){
-            throw new UnAuthException("user is not found");
-        }
-        else{
-            if(passwordEncoding.matches(authRequestDto.getPassword(),user.getUserPassword())){
-                AuthResponseDto authResponseDto = new AuthResponseDto();
-                Token token = tokenRepository.findByUserId(user.getUserId());
-                if(token == null){
-                    throw new UnAuthException();
-                }
-                //token 만료되 었는지 검사
-                if(!this.isTokenExpired(token)) {
-                    //만료되지 않았다면, 기존 토큰 전달
-                    authResponseDto.setToken(token.getToken());
-                }
-                else {
-                    //만료되었을 경우 토큰 재생성
-                    String offeredToken = this.tokenEncode(user.getUserId());
-                    authResponseDto.setToken(offeredToken);
-                    token.setToken(offeredToken);
-                    token.setTokenExpire(LIVE_TOKEN_STATE);
-                    token.setTokenTimestamp(new Date());
-                    tokenRepository.save(token);
-                }
-                authResponseDto.setAccount(user.getUserAccount());
-                logger.info("login success Account:" + authRequestDto.getAccount());
-                return authResponseDto;
-            }
-            else{
-                throw new UnAuthException("Password is Fail");
-            }
-        }
+        User user = userService.findUserByAccount(authRequestDto.getAccount());
 
+        if (!passwordEncoding.matches(authRequestDto.getPassword(), user.getUserPassword())) {
+            throw new CustomException(ErrorCode.ACCOUNT_OR_PASSWORD_IS_INCORRECT);
+        }
+        AuthResponseDto authResponseDto = new AuthResponseDto();
+        Token token = tokenService.findTokenByUserId(user.getUserId());
+        //token 만료되 었는지 검사
+        if (!this.isTokenExpired(token)) {
+            //만료되지 않았다면, 기존 토큰 전달
+            authResponseDto.setToken(token.getToken());
+        } else {
+            //만료되었을 경우 토큰 재생성
+            String offeredToken = this.tokenEncode(user.getUserId());
+            authResponseDto.setToken(offeredToken);
+            tokenRepository.save(
+                    Token.builder()
+                            .userId(user.getUserId())
+                            .token(offeredToken)
+                            .tokenExpire(StatusCode.ACTIVE_TOKEN_STATE.getState())
+                            .tokenTimestamp(new Date())
+                            .build()
+            );
+        }
+        authResponseDto.setAccount(user.getUserAccount());
+        logger.info("login success Account:" + authRequestDto.getAccount());
+        return authResponseDto;
     }
 
-    public ResponseEntity logout(HttpServletRequest httpServletRequest){
-        if(httpServletRequest.getHeader("auth_token") != null){
+    public String logout(HttpServletRequest httpServletRequest) {
+        if (httpServletRequest.getHeader("auth_token") != null) {
             String token = httpServletRequest.getHeader("auth_token");
-            int userId = this.tokenDecode(token);
+            long userId = this.tokenDecode(token);
 
-            Token logoutToken = tokenRepository.findByUserId(userId);
-            logoutToken.setTokenExpire(EXPIRE_TOKEN_STATE);
+            Token logoutToken = tokenService.findTokenByUserId(userId);
+            logoutToken.setTokenExpire(StatusCode.DEACTIVE_TOKEN_STATE.getState());
             logoutToken.setToken("");
             tokenRepository.save(logoutToken);
 
-            return new ResponseEntity(HttpStatus.ACCEPTED);
-        }
-        else{
-            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+            return "logout is success";
+        } else {
+            throw new CustomException(ErrorCode.EMPTY_AUTH_TOKEN_IN_HEADER);
         }
     }
 

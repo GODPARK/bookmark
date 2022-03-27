@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Entity
 @Table(name="token")
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor @Builder @ToString
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor @Builder @ToString(exclude = "user")
 public class Token {
     @Id
     @Column(name="user_id", nullable = false)
