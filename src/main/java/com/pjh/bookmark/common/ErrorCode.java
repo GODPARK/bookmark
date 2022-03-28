@@ -15,7 +15,9 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User is not found"),
     TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "Token is not found"),
     ACCOUNT_OR_PASSWORD_IS_INCORRECT(HttpStatus.UNAUTHORIZED, "account or password is incorrect"),
-    EMPTY_AUTH_TOKEN_IN_HEADER(HttpStatus.BAD_REQUEST, "auth token is empty")
+    EMPTY_AUTH_TOKEN_IN_HEADER(HttpStatus.BAD_REQUEST, "auth token is empty"),
+    BOOKMARK_FREQ_FAIL(HttpStatus.NOT_MODIFIED, "bookmark freq add fail"),
+    BOOKMARK_IS_EMPTY(HttpStatus.NOT_FOUND, "bookmark is not found")
     ;
 
     private final HttpStatus httpStatus;

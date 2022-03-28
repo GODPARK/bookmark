@@ -7,14 +7,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findByUserIdAndState(long userId, int state);
     List<Bookmark> findByUserIdAndIsMainAndState(long userId, int isMain, int state);
     Long countByBookmarkIdAndUserIdAndState(long bookmarkId, long userId, int state);
-    Bookmark findByBookmarkIdAndUserIdAndState(long bookmarkId, long userId, int state);
-    Bookmark findByBookmarkId(long bookmarkId );
+    Optional<Bookmark> findByBookmarkIdAndUserIdAndState(long bookmarkId, long userId, int state);
+    Optional<Bookmark> findByBookmarkId(long bookmarkId );
     List<Bookmark> findByBookmarkNameContainsAndUserIdAndState(String bookmarkName, long userId, int state);
 
     @Query("SELECT b.bookmarkId FROM Bookmark b where b.userId = :userId and b.state = :state")

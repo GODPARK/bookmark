@@ -1,20 +1,26 @@
 package com.pjh.bookmark.entity;
 
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 
 
 @Entity
 @Table(name="bookmark")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class Bookmark {
     @Id
     @Column(name="bm_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long bookmarkId;
 
+    @NotBlank
     @Column(name="bm_name", nullable = false)
     private String bookmarkName;
 
+    @NotBlank
     @Column(name="bm_url", nullable = false)
     private String url;
 
@@ -24,6 +30,7 @@ public class Bookmark {
     @Column(name="bm_info")
     private String bookmarkInfo;
 
+    @Positive
     @Column(name="ur_id")
     private long userId;
 
@@ -35,83 +42,4 @@ public class Bookmark {
 
     @Column(name="bm_freq")
     private long frequency;
-
-    public Bookmark(){
-        this.state = 1;
-        this.frequency = 0;
-        this.isMain = 0;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public long getBookmarkId() {
-        return bookmarkId;
-    }
-
-    public String getBookmarkIcon() {
-        return bookmarkIcon;
-    }
-
-    public String getBookmarkInfo() {
-        return bookmarkInfo;
-    }
-
-    public String getBookmarkName() {
-        return bookmarkName;
-    }
-
-    public int getIsMain() {
-        return isMain;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public long getFrequency() {
-        return frequency;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public void setIsMain(int isMain) {
-        this.isMain = isMain;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public void setFrequency(long frequency) {
-        this.frequency = frequency;
-    }
-
-    public void setBookmarkIcon(String bookmarkIcon) {
-        this.bookmarkIcon = bookmarkIcon;
-    }
-
-    public void setBookmarkInfo(String bookmarkInfo) {
-        this.bookmarkInfo = bookmarkInfo;
-    }
-
-    public void setBookmarkName(String bookmarkName) {
-        this.bookmarkName = bookmarkName;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    @Override
-    public String toString() {
-        return "\nbookmarkId: " + this.bookmarkId + "\nbookmarkName: " + this.bookmarkName + "\nUrl: " + this.url + "\nbookmarkInfo: " + this.bookmarkInfo;
-    }
 }

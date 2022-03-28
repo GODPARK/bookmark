@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.util.List;
 
@@ -56,8 +57,8 @@ public class BookmarkController {
     }
 
     @GetMapping(path = "/{bookmarkId}/freq", consumes = "*/*", produces = "*/*")
-    public void addFrequencyByBookmarkIdApi(@PathVariable("bookmarkId") long bookmarkId, @RequestHeader("auth_token") String token){
-        bookmarkService.addBookmarkFrequencyFunc(bookmarkId, authService.tokenDecode(token));
+    public ResponseEntity<String> addFrequencyByBookmarkIdApi(@PathVariable("bookmarkId") long bookmarkId, @RequestHeader("auth_token") String token){
+        return  ResponseEntity.ok().body(bookmarkService.addBookmarkFrequencyFunc(bookmarkId, authService.tokenDecode(token)));
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
@@ -66,7 +67,7 @@ public class BookmarkController {
     }
 
     @PatchMapping(path="", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Bookmark> patchBookmarkApi(@RequestBody Bookmark bookmark, @RequestHeader("auth_token") String token){
+    public ResponseEntity<Bookmark> patchBookmarkApi(@RequestBody @Valid Bookmark bookmark, @RequestHeader("auth_token") String token){
         return ResponseEntity.ok().body(bookmarkService.updateBookmarkFunc(bookmark, authService.tokenDecode(token)));
     }
 
