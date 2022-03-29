@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,19 +69,21 @@ public class BookmarkService {
     }
 
     public Bookmark createBookmarkFunc(Bookmark bookmark, long userId) {
-        Bookmark saveBookmark = bookmark;
-        saveBookmark.setUserId(userId);
-        saveBookmark.setFrequency(0);
-        return bookmarkRepository.save(saveBookmark);
+        bookmark.setUserId(userId);
+        bookmark.setState(StatusCode.ACTIVE_BOOKMARK_STATE.getState());
+        bookmark.setFrequency(0);
+        bookmark.setCreateDate(new Date());
+        return bookmarkRepository.save(bookmark);
     }
 
     public Bookmark updateBookmarkFunc(Bookmark bookmark, long userId) {
         Bookmark updateBookmark = this.searchBookmarkByIdAndUserId(bookmark.getBookmarkId(), userId);
         if (bookmark.getBookmarkIcon() != null && !bookmark.getBookmarkIcon().equals(""))
             updateBookmark.setBookmarkIcon(bookmark.getBookmarkIcon());
-        if (bookmark.getBookmarkInfo() != null && !bookmark.getBookmarkInfo().equals(""))
-            updateBookmark.setBookmarkInfo(bookmark.getBookmarkInfo());
         if (bookmark.getUrl() != null && !bookmark.getUrl().equals("")) updateBookmark.setUrl(bookmark.getUrl());
+        if (bookmark.getBookmarkName() != null && !bookmark.getBookmarkName().equals(updateBookmark.getBookmarkName())) updateBookmark.setBookmarkName(bookmark.getBookmarkName());
+        if (bookmark.getBookmarkInfo() != null && !bookmark.getBookmarkInfo().equals(updateBookmark.getBookmarkIcon())) updateBookmark.setBookmarkInfo(bookmark.getBookmarkInfo());
+        updateBookmark.setUpdateDate(new Date());
         return bookmarkRepository.save(updateBookmark);
     }
 
@@ -88,6 +91,7 @@ public class BookmarkService {
         Bookmark deleteBookmark = this.searchBookmarkByIdAndUserId(bookmarkId, userId);
         hashService.deleteHashMapByBookmarkFunc(deleteBookmark.getBookmarkId());
         deleteBookmark.setState(StatusCode.DEACTIVE_BOOKMARK_STATE.getState());
+        deleteBookmark.setDeleteDate(new Date());
         return bookmarkRepository.save(deleteBookmark);
     }
 

@@ -5,11 +5,12 @@ import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
+import java.util.Date;
 
 
 @Entity
 @Table(name="bookmark")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString @Builder
 public class Bookmark {
     @Id
     @Column(name="bm_id", nullable = false)
@@ -42,4 +43,13 @@ public class Bookmark {
 
     @Column(name="bm_freq")
     private long frequency;
+
+    @Column(name="bm_create_date")
+    private Date createDate;
+
+    @Column(name="bm_update_date")
+    private Date updateDate;
+
+    @Column(name="bm_delete_date")
+    private Date deleteDate;
 }

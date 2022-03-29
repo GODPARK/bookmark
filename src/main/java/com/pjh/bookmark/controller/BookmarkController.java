@@ -28,9 +28,6 @@ public class BookmarkController {
     @Autowired
     private AuthService authService;
 
-    @Autowired
-    private CombinationService combinationService;
-
     @GetMapping(path="", consumes = "*/*", produces = "application/json")
     public ResponseEntity<List<Bookmark>> getTotalBookmarkListApi(@RequestHeader("auth_token") String token){
         return ResponseEntity.ok().body(bookmarkService.totalBookmarkListFunc(authService.tokenDecode(token)));
@@ -46,10 +43,10 @@ public class BookmarkController {
         return ResponseEntity.ok().body(bookmarkService.searchBookmarkListByName(bookmarkName, authService.tokenDecode(token)));
     }
 
-    @GetMapping(path="/hash/{hashId}", consumes = "*/*", produces = "application/json")
-    public ResponseEntity<List<Bookmark>> getBookmarkListByHashIdApi(@PathVariable("hashId") long hashId){
-        return ResponseEntity.ok().body(hashService.bookmarkListByHashKeyFunc(hashId));
-    }
+//    @GetMapping(path="/hash/{hashId}", consumes = "*/*", produces = "application/json")
+//    public ResponseEntity<List<Bookmark>> getBookmarkListByHashIdApi(@PathVariable("hashId") long hashId){
+//        return ResponseEntity.ok().body(hashService.bookmarkListByHashKeyFunc(hashId));
+//    }
 
     @GetMapping(path="/unmapped", consumes = "*/*", produces = "application/json")
     public ResponseEntity<List<Bookmark>> getBookmarkListNotHashMapApi(@RequestHeader("auth_token") String token) {
@@ -62,8 +59,8 @@ public class BookmarkController {
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
-    public CombinationResponseDto postCreateNewBookmarkApi(@RequestBody CombinationRequestDto combinationRequestDto, @RequestHeader("auth_token") String token){
-        return combinationService.bookmarkAndHashSave(combinationRequestDto, authService.tokenDecode(token));
+    public ResponseEntity<Bookmark> postCreateNewBookmarkApi(@RequestBody @Valid Bookmark bookmark, @RequestHeader("auth_token") String token){
+        return ResponseEntity.ok().body(bookmarkService.createBookmarkFunc(bookmark, authService.tokenDecode(token)));
     }
 
     @PatchMapping(path="", consumes = "application/json", produces = "application/json")

@@ -1,9 +1,12 @@
 package com.pjh.bookmark.service;
 
+import com.pjh.bookmark.common.ErrorCode;
+import com.pjh.bookmark.common.StatusCode;
 import com.pjh.bookmark.dto.HashRequestDto;
 import com.pjh.bookmark.entity.Bookmark;
 import com.pjh.bookmark.entity.HashKey;
 import com.pjh.bookmark.entity.HashMap;
+import com.pjh.bookmark.exception.CustomException;
 import com.pjh.bookmark.exception.HashException;
 import com.pjh.bookmark.exception.SuccessException;
 import com.pjh.bookmark.repository.BookmarkRepository;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class HashService {
@@ -40,15 +44,34 @@ public class HashService {
     @Autowired
     private BookmarkRepository bookmarkRepository;
 
+    @Autowired
+    private BookmarkService bookmarkService;
+
+    public HashKey searchHashKeyById(long hashKeyId, long userId) {
+        Optional<HashKey> hashKey = this.hashKeyRepository.findByHashIdAndUserIdAndState(
+                hashKeyId, userId, StatusCode.ACTIVE_HASH_STATE.getState()
+        );
+        if (hashKey.isPresent()) return hashKey.get();
+        else throw new CustomException(ErrorCode.HASHKEY_IS_EMPTY);
+    }
+
+    public HashKey searchHashKeyByHashName(String hashKeyName, long userId) {
+        Optional<HashKey> hashKey = this.hashKeyRepository.findByHashNameAndUserIdAndState(
+                hashKeyName, userId, StatusCode.ACTIVE_HASH_STATE.getState()
+        );
+        if (hashKey.isPresent()) return hashKey.get();
+        else throw new CustomException(ErrorCode.HASHKEY_IS_EMPTY);
+    }
+
     public List<HashKey> hashKeyListByUserFunc(long userId) {
-        return hashKeyRepository.findByUserIdAndState(userId, LIVE_HASHKEY_STATE);
+        return hashKeyRepository.findByUserIdAndState(userId, StatusCode.ACTIVE_HASH_STATE.getState());
     }
 
     public List<HashKey> hashKeyListByBookmarkFunc(long bookmarkId, long userId) {
         List<HashMap> hashMapList = hashMapRepository.findByBookmarkId(bookmarkId);
         List<HashKey> hashKeyList = new ArrayList<>();
         for (HashMap hashMap : hashMapList) {
-            HashKey hashKey = hashKeyRepository.findByHashIdAndUserIdAndState(hashMap.getHashId(), userId, LIVE_HASHKEY_STATE);
+            HashKey hashKey = this.searchHashKeyById(hashMap.getHashId(), userId);
             hashKeyList.add(hashKey);
         }
         return hashKeyList;
@@ -58,7 +81,8 @@ public class HashService {
         List<HashMap> hashMapList = hashMapRepository.findByHashId(hashId);
         List<Bookmark> bookmarkList = new ArrayList<>();
         for (HashMap hashMap : hashMapList) {
-            bookmarkList.add(bookmarkRepository.findByBookmarkId(hashMap.getBookmarkId()));
+            Optional<Bookmark> bookmark = bookmarkRepository.findByBookmarkId(hashMap.getBookmarkId());
+            if (bookmark.isPresent()) bookmarkList.add(bookmark.get());
         }
         bookmarkList.sort(new Comparator<Bookmark>() {
             @Override
@@ -71,72 +95,62 @@ public class HashService {
         return bookmarkList;
     }
 
-    public List<HashKey> createHashMapAndBookmarkFunc(HashRequestDto hashRequestDto, long userId) {
+    public List<HashKey> createHashMapAndBookmarkFunc(List<HashKey> hashKeyList, long userId, long bookmarkId) {
         //Bookmark ID 존대 여부 확인
-        if (bookmarkRepository.countByBookmarkIdAndUserIdAndState(hashRequestDto.getBookmarkId(), userId, LIVE_BOOKMARK_STATE) == 0) {
-            throw new HashException("Not Found By BookmarkId");
-        }
-        for (HashKey hashKey : hashRequestDto.getHashKeyList()) {
+        Bookmark bookmark = this.bookmarkService.searchBookmarkByIdAndUserId(bookmarkId, userId);
+
+        for (HashKey hashKey : hashKeyList) {
             // 이미 존재하는 hash key 인지 확인
             hashKey.setHashName(hashKey.getHashName().replace(" ", "").toLowerCase());
-            HashKey checkHash = hashKeyRepository.findByHashNameAndUserIdAndState(hashKey.getHashName(), userId, LIVE_HASHKEY_STATE);
-
-            if (checkHash == null) {
-                hashKey.setState(LIVE_HASHKEY_STATE);
-                hashKey.setUserId(userId);
-                checkHash = hashKeyRepository.save(hashKey);
-            } else {
-                if (hashKey.getHashId() != checkHash.getHashId()) {
-                    throw new HashException("wrong hash infomation");
-                }
-            }
+            HashKey checkHash = this.searchHashKeyById(hashKey.getHashId(), userId);
+            hashKey.setState(LIVE_HASHKEY_STATE);
+            hashKey.setUserId(userId);
+            checkHash = hashKeyRepository.save(hashKey);
 
             HashMap hashMap = new HashMap();
-            hashMap.setBookmarkId(hashRequestDto.getBookmarkId());
+            hashMap.setBookmarkId(bookmark.getBookmarkId());
             hashMap.setHashId(checkHash.getHashId());
 
             // 이미 매핑 이력 있는지 조사
-            if (hashMapRepository.countByHashIdAndBookmarkId(checkHash.getHashId(), hashRequestDto.getBookmarkId()) == 0) {
+            if (hashMapRepository.countByHashIdAndBookmarkId(checkHash.getHashId(), bookmark.getBookmarkId()) == 0) {
                 hashMapRepository.save(hashMap);
             }
         }
-        return this.hashKeyListByBookmarkFunc(hashRequestDto.getBookmarkId(), userId);
+        return this.hashKeyListByBookmarkFunc(bookmark.getBookmarkId() , userId);
     }
 
-    public List<HashKey> editMappingHashAndBookmark(HashRequestDto hashRequestDto, long userId) {
+    public List<HashKey> editMappingHashAndBookmark(List<HashKey> hashKeyList, long bookmarkId, long userId) {
         logger.info("edit mapping hash and bookmark");
-        if (bookmarkRepository.countByBookmarkIdAndUserIdAndState(hashRequestDto.getBookmarkId(), userId, LIVE_BOOKMARK_STATE) == 0) {
-            throw new HashException("Not Found By BookmarkId");
-        }
-        List<HashMap> currentHashMapList = hashMapRepository.findByBookmarkId(hashRequestDto.getBookmarkId());
+        Bookmark bookmark = this.bookmarkService.searchBookmarkByIdAndUserId(bookmarkId, userId);
+        List<HashMap> currentHashMapList = hashMapRepository.findByBookmarkId(bookmark.getBookmarkId());
         List<Long> dbHashIdList = new ArrayList<>();
         List<Long> requestHashIdList = new ArrayList<>();
         for (HashMap hashMap : currentHashMapList) {
             dbHashIdList.add(hashMap.getHashId());
         }
-        for (HashKey hashKey : hashRequestDto.getHashKeyList()) {
+        for (HashKey hashKey : hashKeyList) {
             requestHashIdList.add(hashKey.getHashId());
         }
         if (requestHashIdList.containsAll(dbHashIdList) && dbHashIdList.containsAll(requestHashIdList)) {
-            return this.hashKeyListByBookmarkFunc(hashRequestDto.getBookmarkId(), userId);
+            return this.hashKeyListByBookmarkFunc(bookmark.getBookmarkId(), userId);
         } else {
             List<Long> deleteTargetList = new ArrayList<>(dbHashIdList);
             List<Long> createTargetList = new ArrayList<>(requestHashIdList);
             deleteTargetList.removeAll(requestHashIdList);
             createTargetList.removeAll(dbHashIdList);
             for (Long deleteId : deleteTargetList) {
-                hashMapRepository.deleteByHashIdAndBookmarkId(deleteId, hashRequestDto.getBookmarkId());
+                hashMapRepository.deleteByHashIdAndBookmarkId(deleteId, bookmark.getBookmarkId());
             }
             for (Long createId : createTargetList) {
                 HashMap createHashMap = new HashMap();
                 createHashMap.setHashId(createId);
-                createHashMap.setBookmarkId(hashRequestDto.getBookmarkId());
-                if (hashMapRepository.countByHashIdAndBookmarkId(createHashMap.getHashId(), hashRequestDto.getBookmarkId()) == 0) {
+                createHashMap.setBookmarkId(bookmark.getBookmarkId());
+                if (hashMapRepository.countByHashIdAndBookmarkId(createHashMap.getHashId(), bookmark.getBookmarkId()) == 0) {
                     hashMapRepository.save(createHashMap);
                 }
             }
         }
-        return this.hashKeyListByBookmarkFunc(hashRequestDto.getBookmarkId(), userId);
+        return this.hashKeyListByBookmarkFunc(bookmark.getBookmarkId(), userId);
     }
 
     @CacheEvict(value = "main_hash", allEntries = true)
@@ -146,7 +160,7 @@ public class HashService {
         }
         // 이미 존재하는 hash key 인지 확인
         hashKey.setHashName(hashKey.getHashName().replace(" ", "").toLowerCase());
-        HashKey checkHash = hashKeyRepository.findByHashNameAndUserIdAndState(hashKey.getHashName(), userId, LIVE_HASHKEY_STATE);
+        HashKey checkHash = this.searchHashKeyByHashName(hashKey.getHashName(), userId);
         if (checkHash == null) {
             hashKey.setState(LIVE_HASHKEY_STATE);
             hashKey.setUserId(userId);
@@ -158,17 +172,18 @@ public class HashService {
 
     @CacheEvict(value = "main_hash", allEntries = true)
     public HashKey updateHashKeyFunc(HashKey hashKey, long userId) {
-        HashKey targetHash = hashKeyRepository.findByHashIdAndUserIdAndState(hashKey.getHashId(), userId, LIVE_HASHKEY_STATE);
+        HashKey targetHash = this.searchHashKeyByHashName(hashKey.getHashName(), userId);
         if (targetHash == null) throw new HashException("hash is not found");
         targetHash.setHashName(hashKey.getHashName());
         targetHash.setHashMain(hashKey.getHashMain());
         return hashKeyRepository.save(targetHash);
     }
 
-    public List<HashKey> deleteHashMapFunc(HashRequestDto hashRequestDto, long userId) {
+    public List<HashKey> deleteHashMapFunc(List<HashKey> hashKeyList, long bookmarkId, long userId) {
         List<HashMap> hashMapList = new ArrayList<>();
-        for (HashKey hashKey : hashRequestDto.getHashKeyList()) {
-            HashMap hashMap = hashMapRepository.findByHashIdAndBookmarkId(hashKey.getHashId(), hashRequestDto.getBookmarkId());
+        Bookmark bookmark = this.bookmarkService.searchBookmarkByIdAndUserId(bookmarkId, userId);
+        for (HashKey hashKey : hashKeyList) {
+            HashMap hashMap = hashMapRepository.findByHashIdAndBookmarkId(hashKey.getHashId(), bookmark.getBookmarkId());
             if (hashMap != null) {
                 hashMapList.add(hashMap);
             } else {
@@ -176,7 +191,7 @@ public class HashService {
             }
         }
         hashMapRepository.deleteAll(hashMapList);
-        return this.hashKeyListByBookmarkFunc(hashRequestDto.getBookmarkId(), userId);
+        return this.hashKeyListByBookmarkFunc(bookmark.getBookmarkId(), userId);
     }
 
     public void deleteHashMapByBookmarkFunc(long bookmarkId) {
@@ -188,7 +203,7 @@ public class HashService {
 
     @CacheEvict(value = "main_hash", allEntries = true)
     public HashKey deleteHashMapAndHashKeyFunc(long hashId, long userId) {
-        HashKey deleteHashKey = hashKeyRepository.findByHashIdAndUserIdAndState(hashId, userId, LIVE_HASHKEY_STATE);
+        HashKey deleteHashKey = this.searchHashKeyById(hashId, userId);
         if (deleteHashKey == null) throw new HashException("hash key is not found");
         List<HashMap> hashMapList = hashMapRepository.findByHashId(deleteHashKey.getHashId());
         if (!hashMapList.isEmpty()) {

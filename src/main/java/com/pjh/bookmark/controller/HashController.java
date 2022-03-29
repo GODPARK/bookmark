@@ -35,14 +35,14 @@ public class HashController {
         return ResponseEntity.ok().body(hashService.mainHashKeyListFunc(authService.tokenDecode(token)));
     }
 
-    @PostMapping(path="/map", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<List<HashKey>> postMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
-        return ResponseEntity.ok().body(hashService.createHashMapAndBookmarkFunc(hashRequestDto, authService.tokenDecode(token)));
+    @PostMapping(path="/map/bookmark/{bookmarkId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<List<HashKey>> postMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token, @PathVariable("bookmarkId") long bookmarkId){
+        return ResponseEntity.ok().body(hashService.createHashMapAndBookmarkFunc(hashRequestDto.getHashKeyList(), authService.tokenDecode(token), bookmarkId));
     }
 
-    @PatchMapping(path="/map", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<List<HashKey>> patchMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token){
-        return ResponseEntity.ok().body(hashService.editMappingHashAndBookmark(hashRequestDto,authService.tokenDecode(token)));
+    @PatchMapping(path="/map/bookmark/{bookmarkId}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<List<HashKey>> patchMappingHashWithBookmarkApi(@RequestBody HashRequestDto hashRequestDto, @RequestHeader("auth_token") String token, @PathVariable("bookmarkId") long bookmarkId){
+        return ResponseEntity.ok().body(hashService.editMappingHashAndBookmark(hashRequestDto.getHashKeyList(), bookmarkId, authService.tokenDecode(token)));
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
