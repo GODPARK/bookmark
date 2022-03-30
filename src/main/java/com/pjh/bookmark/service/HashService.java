@@ -21,10 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class HashService {
@@ -155,27 +152,25 @@ public class HashService {
 
     @CacheEvict(value = "main_hash", allEntries = true)
     public HashKey createHashKeyFunc(HashKey hashKey, long userId) {
-        if (hashKey.getHashName().equals("")) {
-            throw new HashException("hash key name is empty");
-        }
         // 이미 존재하는 hash key 인지 확인
         hashKey.setHashName(hashKey.getHashName().replace(" ", "").toLowerCase());
-        HashKey checkHash = this.searchHashKeyByHashName(hashKey.getHashName(), userId);
-        if (checkHash == null) {
-            hashKey.setState(LIVE_HASHKEY_STATE);
+        Optional<HashKey> checkHash = this.hashKeyRepository.findByHashNameAndUserIdAndState(hashKey.getHashName(), userId, StatusCode.ACTIVE_HASH_STATE.getState());
+        if (!checkHash.isPresent()) {
+            hashKey.setState(StatusCode.ACTIVE_HASH_STATE.getState());
             hashKey.setUserId(userId);
+            hashKey.setCreateDate(new Date());
             return hashKeyRepository.save(hashKey);
         } else {
-            throw new HashException("hash name already exist");
+            throw new CustomException(ErrorCode.HASHKEY_IS_ALREADY_EXSIST);
         }
     }
 
     @CacheEvict(value = "main_hash", allEntries = true)
     public HashKey updateHashKeyFunc(HashKey hashKey, long userId) {
-        HashKey targetHash = this.searchHashKeyByHashName(hashKey.getHashName(), userId);
-        if (targetHash == null) throw new HashException("hash is not found");
+        HashKey targetHash = this.searchHashKeyById(hashKey.getHashId(), userId);
         targetHash.setHashName(hashKey.getHashName());
         targetHash.setHashMain(hashKey.getHashMain());
+        targetHash.setUpdateDate(new Date());
         return hashKeyRepository.save(targetHash);
     }
 

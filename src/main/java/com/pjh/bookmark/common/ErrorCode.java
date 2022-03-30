@@ -20,7 +20,8 @@ public enum ErrorCode {
     BOOKMARK_FREQ_FAIL(HttpStatus.NOT_MODIFIED, "bookmark freq add fail"),
     BOOKMARK_IS_EMPTY(HttpStatus.NOT_FOUND, "bookmark is not found"),
 
-    HASHKEY_IS_EMPTY(HttpStatus.NOT_FOUND, "hashkey is not found")
+    HASHKEY_IS_EMPTY(HttpStatus.NOT_FOUND, "hashkey is not found"),
+    HASHKEY_IS_ALREADY_EXSIST(HttpStatus.BAD_REQUEST, "hash name is already exist")
     ;
 
     private final HttpStatus httpStatus;

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -46,7 +47,7 @@ public class HashController {
     }
 
     @PostMapping(path="", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<HashKey> postCreateNewHashKeyApi(@RequestBody HashKey hashKey, @RequestHeader("auth_token") String token){
+    public ResponseEntity<HashKey> postCreateNewHashKeyApi(@RequestBody @Valid HashKey hashKey, @RequestHeader("auth_token") String token){
         return ResponseEntity.ok().body(hashService.createHashKeyFunc(hashKey, authService.tokenDecode(token)));
     }
 

@@ -1,15 +1,22 @@
 package com.pjh.bookmark.entity;
 
+import lombok.*;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import java.util.Date;
 
 @Entity
 @Table(name="hashkey")
+@Getter @Setter @ToString @Builder @NoArgsConstructor @AllArgsConstructor
 public class HashKey {
     @Id
     @Column(name="hash_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long hashId;
 
+    @NotBlank
     @Column(name ="hash_name", nullable = false)
     private String hashName;
 
@@ -22,48 +29,12 @@ public class HashKey {
     @Column(name="user_id", nullable = false)
     private long userId;
 
-    public HashKey(){
-        this.hashMain = 0;
-        this.state = 1;
-    }
+    @Column(name="create_date", nullable = true)
+    private Date createDate;
 
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
+    @Column(name="update_date", nullable = true)
+    private Date updateDate;
 
-    public void setHashId(long hashId) {
-        this.hashId = hashId;
-    }
-
-    public void setHashName(String hashName) {
-        this.hashName = hashName;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public void setHashMain(int hashMain) {
-        this.hashMain = hashMain;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public long getHashId() {
-        return hashId;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public String getHashName() {
-        return hashName;
-    }
-
-    public int getHashMain() {
-        return hashMain;
-    }
+    @Column(name="delete_date", nullable = true)
+    private Date deleteDate;
 }
