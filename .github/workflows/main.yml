@@ -1,0 +1,18 @@
+name: github-action-docker-push
+
+on:
+  push:
+    branches:  [ feature/dockerfile ]
+
+jobs:
+  build:
+    runs-on: [self-hosted]
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: docker build
+        run: cd $GITHUB_WORKSPACE && docker build -t test-image:v1 .
+
+      - name: docker push
+        run: docker push pjh-docker-registry.kr.ncr.ntruss.com/test-image:v1
