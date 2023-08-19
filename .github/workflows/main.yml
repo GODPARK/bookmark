@@ -11,6 +11,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
+      - name: test
+        run: ls /home/github/actions-runner/_work/bookmark/bookmark/
+
       - name: build
         uses: ./.github/actions/action
 
