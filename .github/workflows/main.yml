@@ -18,5 +18,5 @@ jobs:
         run: ls -al /home/github/actions-runner/_work/bookmark/bookmark/.github/ && ls -al /home/github/actions-runner/_work/bookmark/bookmark/.github/actions
 
       - name: build
-        uses: ./.github/actions/action
+        uses: ./.github/actions/
 
